@@ -1,84 +1,252 @@
 %---------- Inleiding ---------------------------------------------------------
 
-% TODO: Is dit voorstel gebaseerd op een paper van Research Methods die je
+% --- Is dit voorstel gebaseerd op een paper van Research Methods die je
 % vorig jaar hebt ingediend? Heb je daarbij eventueel samengewerkt met een
 % andere student?
 % Zo ja, haal dan de tekst hieronder uit commentaar en pas aan.
 
-%\paragraph{Opmerking}
+\paragraph{Opmerking}
 
-% Dit voorstel is gebaseerd op het onderzoeksvoorstel dat werd geschreven in het
-% kader van het vak Research Methods dat ik (vorig/dit) academiejaar heb
-% uitgewerkt (met medesturent VOORNAAM NAAM als mede-auteur).
-% 
+Dit voorstel is gebaseerd op het onderzoeksvoorstel dat werd geschreven in het
+kader van het vak Research Methods dat ik dit academiejaar heb
+uitgewerkt (met medestudent Sam De Gendt als mede-auteur).
 
 \section{Inleiding}%
 \label{sec:inleiding}
 
-Waarover zal je bachelorproef gaan? Introduceer het thema en zorg dat volgende zaken zeker duidelijk aanwezig zijn:
+% (fase 1 - onderzoeksvraag formuleren)
 
-\begin{itemize}
-  \item kaderen thema
-  \item de doelgroep
-  \item de probleemstelling en (centrale) onderzoeksvraag
-  \item de onderzoeksdoelstelling
-\end{itemize}
+% Kaderen thema
+Trampolinespringen is een technische en complexe sport, waar atleten beoordeeld worden op basis van verschillende componenten zoals moeilijkheidsgraad, uitvoering, horizontale verplaatsing (horizontal displacement, HD) en vluchttijd (time of flight, ToF) van de sprongen \autocite{FTTC2024}.
 
-Denk er aan: een typische bachelorproef is \textit{toegepast onderzoek}, wat betekent dat je start vanuit een concrete probleemsituatie in bedrijfscontext, een \textbf{casus}. Het is belangrijk om je onderwerp goed af te bakenen: je gaat voor die \textit{ene specifieke probleemsituatie} op zoek naar een goede oplossing, op basis van de huidige kennis in het vakgebied.
+Het meten van HD en ToF in competities gebeurt door middel van het \emph{HDTS Trampoline Measurement Device}. Dit systeem, verder afgekort als HDTS, gebruikt vier krachtplaten die ge\"{i}nstalleerd zijn onder de poten van de trampoline. Deze berekent zowel de HD als ToF aan de hand van krachtverhoudingen gemeten door de vier platen \autocite{Ferger2019}.
 
-De doelgroep moet ook concreet en duidelijk zijn, dus geen algemene of vaag gedefinieerde groepen zoals \emph{bedrijven}, \emph{developers}, \emph{Vlamingen}, enz. Je richt je in elk geval op it-professionals, een bachelorproef is geen populariserende tekst. Eén specifiek bedrijf (die te maken hebben met een concrete probleemsituatie) is dus beter dan \emph{bedrijven} in het algemeen.
+% Doelgroep + Probleemstelling
+% In voetnoot refereren naar link van shop om prijs aan te tonen
 
-Formuleer duidelijk de onderzoeksvraag! De begeleiders lezen nog steeds te veel voorstellen waarin we geen onderzoeksvraag terugvinden.
+Het probleem met HDTS is dat de prijs tussen de \euro{}5.000 en \euro{}10.000 ligt\footnote{\url{https://gymaid.com/products/eurotramp-hdts/}}. Dit maakt het systeem voor turnclubs met beperkte middelen vaak niet betaalbaar. 
 
-Schrijf ook iets over de doelstelling. Wat zie je als het concrete eindresultaat van je onderzoek, naast de uitgeschreven scriptie? Is het een proof-of-concept, een rapport met aanbevelingen, \ldots Met welk eindresultaat kan je je bachelorproef als een succes beschouwen?
+Veel sportclubs kampen al met financi\"{e}le moeilijkheden. Uit een bevraging van de \textcite{Sportfederatie2024} blijkt dat 42\% van de Vlaamse sportclubs aangeeft dat hun accommodatie verouderd is en gerenoveerd moet worden. Van de clubs die eigenaar zijn van hun sportaccommodatie beschikt 60\%  over onvoldoende financi\"{e}le middelen om noodzakelijke verbeteringen aan de infrastructuur uit te voeren.
 
-%---------- Stand van zaken ---------------------------------------------------
+Turnclubs met dergelijke financi\"{e}le problemen kunnen zich geen HDTS-systeem veroorloven, waardoor atleten in deze clubs geen toegang hebben tot het automatisch meten van HD en ToF. Hierdoor zijn ze genoodzaakt tijdens hun voorbereidingen op competities manueel video-opnames van hun prestatie te analyseren om deze parameters te berekenen.
+
+% TODO: Deelvragen incorporeren probleemdomein + oplossingsdomein
+
+% Onderzoeksvraag
+Dit onderzoek richt zich op de hoofdvraag: \textit{Hoe kan een computer vision-systeem ingezet worden om HD en ToF te registreren als low-cost alternatief voor een commercieel HDTS?}
+
+Om een antwoord te vinden op deze hoofdvraag, worden volgende deelvragen onderzocht:
+\begin{enumerate}
+    \item Welke cameraconfiguratie is het meest geschikt om de landingspositie van een gymnast op een trampoline te detecteren?
+    \item Welke computer vision-technieken zijn geschikt om de landingspositie van een gymnast op een trampoline te detecteren?
+    \item Hoe kan horizontale verplaatsing berekend worden op basis van videobeelden?
+    \item Hoe kan vluchttijd berekend worden op basis van videobeelden?
+    \item Welke hardware-configuratie biedt de beste balans tussen kosten en nauwkeurigheid voor kleine turnclubs?
+    \item Hoe nauwkeurig is het ontwikkelde systeem?
+\end{enumerate}
+
+% Onderzoeksdoelstelling
+Het doel van dit onderzoek is om een proof of concept te ontwikkelen van een kosteneffectief alternatief voor commerci\"{e}le HDTS-systemen, die de HD en ToF kan bepalen met een betrouwbaarheid van meer dan 80\%.
+
 
 \section{Literatuurstudie}%
 \label{sec:literatuurstudie}
 
-Hier beschrijf je de \emph{state-of-the-art} rondom je gekozen onderzoeksdomein, d.w.z.\ een inleidende, doorlopende tekst over het onderzoeksdomein van je bachelorproef. Je steunt daarbij heel sterk op de professionele \emph{vakliteratuur}, en niet zozeer op populariserende teksten voor een breed publiek. Wat is de huidige stand van zaken in dit domein, en wat zijn nog eventuele open vragen (die misschien de aanleiding waren tot je onderzoeksvraag!)?
+\subsection{Beoordeling}
+% Zoom specifieker in op hoe punten voor HD en ToF bepaald worden en hoe deze de totale score beinvloeden (Voeg foto toe van zones om HD te berekenen; Geef formules die gebruik worden om ToF score te berekenen)
+Om het belang van HD en ToF bij beoordeling in trampolinespringen te begrijpen, wordt eerst het beoordelingsproces toegelicht. 
 
-Je mag de titel van deze sectie ook aanpassen (literatuurstudie, stand van zaken, enz.). Zijn er al gelijkaardige onderzoeken gevoerd? Wat concluderen ze? Wat is het verschil met jouw onderzoek?
+Volgens de FIG Code of Points \parencite{FTTC2024} bestaat een individuele oefening uit een reeks van 10 sprongen, waarvan de eindscore wordt bepaald op basis van vijf componenten:
 
-Verwijs bij elke introductie van een term of bewering over het domein naar de vakliteratuur, bijvoorbeeld~\autocite{Hykes2013}! Denk zeker goed na welke werken je refereert en waarom.
+\begin{itemize}
+    \item $D$ - Moeilijkheidsgraad (Difficulty)
+    \item $E$ - Uitvoering (Execution)
+    \item $HD$ - Horizontale verplaatsing (Horizontal Displacement)
+    \item $ToF$ - Vluchttijd (Time of Flight)
+    \item $P$ - Strafpunten (Penalties)
+\end{itemize}
 
-Draag zorg voor correcte literatuurverwijzingen! Een bronvermelding hoort thuis \emph{binnen} de zin waar je je op die bron baseert, dus niet er buiten! Maak meteen een verwijzing als je gebruik maakt van een bron. Doe dit dus \emph{niet} aan het einde van een lange paragraaf. Baseer nooit teveel aansluitende tekst op eenzelfde bron.
+De berekening van de eindscore gebeurt aan de hand van de volgende formule:
 
-Als je informatie over bronnen verzamelt in JabRef, zorg er dan voor dat alle nodige info aanwezig is om de bron terug te vinden (zoals uitvoerig besproken in de lessen Research Methods).
+\[
+\text{Eindscore} = E + HD + D + ToF - P
+\]
 
-% Voor literatuurverwijzingen zijn er twee belangrijke commando's:
-% \autocite{KEY} => (Auteur, jaartal) Gebruik dit als de naam van de auteur
-%   geen onderdeel is van de zin.
-% \textcite{KEY} => Auteur (jaartal)  Gebruik dit als de auteursnaam wel een
-%   functie heeft in de zin (bv. ``Uit onderzoek door Doll & Hill (1954) bleek
-%   ...'')
+In dit onderzoek ligt de focus specifiek op de HD en ToF componenten.
 
-Je mag deze sectie nog verder onderverdelen in subsecties als dit de structuur van de tekst kan verduidelijken.
+\subsection{Horizontale Verplaatsing (HD)}
 
-%---------- Methodologie ------------------------------------------------------
-\section{Methodologie}%
+De HD component geeft weer hoe vaak een gymnast tijdens zijn of haar sprongreeks afweek van het midden van de trampoline. Het trampolinebed is opgedeeld in zones, afhankelijk van de zone waarin de voeten van de atleet landen worden er strafpunten afgetrokken van een basisscore van 10 punten \autocite{FTTC2024}.
+
+Het midden van de trampoline geldt als ideale landingspositie zonder aftrek, terwijl elke zone die verder ligt van het midden geleidelijk hogere strafpunten oplevert. Figuur~\ref{fig:HD_zones} illustreert de hoeveelheid punten die per zone worden afgetrokken van de basisscore.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{"./img/HD_zones.jpg"}
+    \caption{Indeling van zones op het trampolinebed voor het bepalen van strafpunten voor horizontale verplaatsing.
+        \autocite{FTTC2024}.}
+    \label{fig:HD_zones}
+\end{figure}
+
+\subsection{Vluchttijd (ToF)}
+De ToF component omvat de totale tijd dat de gymnast zich in de lucht bevindt tijdens zijn of haar routine. Deze is belangrijk om twee redenen. Enerzijds draagt ToF direct bij aan de totaalscore. Anderzijds betekent een hogere ToF dat de gymnast meer tijd heeft om de technische componenten uit te voeren.
+
+Deze tijd wordt geregistreerd in duizendsten van een seconde en vervolgens afgerond naar beneden op een honderdste van een seconde. Zo zou een gymnast met een gemeten vluchttijd van 16.197 seconden een score krijgen van 16.19 voor ToF \autocite{FTTC2024}.
+\[
+16.197 \text{ seconden} \rightarrow \lfloor 16.197 \rfloor_{\downarrow 0.01} = 16.19 \text{ punten}
+\]
+
+\subsection{Commercieel meetsysteem}
+% Werking van HDTS, beperking en kosten
+\textcite{Ferger2017} beschrijven hoe, door de inspanningen om de scoreberekening objectiever te maken, vluchttijd en horizontale verplaatsing werden ge\"{i}ntroduceerd en toegevoegd aan de internationale beoordelingsregels. Dit heeft geleid tot de ontwikkeling van een nieuw meetsysteem, namelijk HDTS (horizontal displacement, time of flight, and synchronicity).
+
+Het HDTS-systeem omvat drie onderdelen: horizontale verplaatsing (HD), vluchttijd (T) en synchroniciteit (S), waarvan we de eerste twee meer in detail bekijken. 
+
+Dit systeem maakt gebruik van vier krachtplaten die geplaatst worden onder de poten van het trampolinerek en is gekoppeld aan de Eurotramp \textit{Qira 1.03} analyse software. Deze software is specifiek ontwikkeld voor het berekenen van de ToF en HD. Voorafgaand aan gebruik kalibreert het systeem zichzelf automatisch, zodat nauwkeurige metingen kunnen worden gegarandeerd. Op basis van de timing en verdeling van de gemeten krachten via de sensoren worden de waarden voor zowel HD als ToF berekend en real-time weergegeven via de Qira-software. \autocite{Dyas2023}
+
+\subsection{Meetmethodes}
+Om de HD-waarde te bepalen, worden de landingsposities van de gymnast berekend op basis van de verhoudingen van de krachten gemeten door de krachtplaten. De X- en Y-waarde van de landingsposities worden berekend aan de hand van de volgende formules:
+
+\begin{align*}
+    F(dx) &= \frac{F_3 + F_4}{\frac{L}{2}} - \frac{F_1 + F_2}{\frac{L}{2}} \\ 
+    F(dy) &= \frac{F_2 + F_3}{\frac{B}{2}} - \frac{F_1 + F_4}{\frac{B}{2}}
+\end{align*}
+
+In deze formules staan $F_1$, $F_2$, $F_3$, en $F_4$ voor de krachten die gemeten worden door de vier krachtplaten, en $L$ en $B$ voor de lengte en breedte van de trampoline, respectievelijk. $F(dx)$ en $F(dy)$ representeren de berekende horizontale verplaatsing in de X- en Y-richting, zoals beschreven door \textcite{Ferger2019}.
+
+De positie van de krachtplaten en de X- en Y-richtingen worden weergegeven in Figuur~\ref{fig:Krachtplaten}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\linewidth]{"./img/Krachtplaten.jpg"}
+    \caption{Positie van de krachtplaten (F1, F2, F3, F4) onder de trampoline en de X- en Y-richtingen die gebruikt worden voor het evalueren van de landingsposities 
+        \autocite{Ferger2019}.}
+    \label{fig:Krachtplaten}
+\end{figure}
+
+ToF wordt gemeten door de krachtmetingen onder de trampolinepoten te combineren met een algoritme om landings- en afstootmomenten te bepalen.
+
+Het systeem detecteert wanneer een gymnast landt of afstoot door een krachtpiek te zoeken (>5000 N) en zoekt vervolgens naar de punten waar 50\% van die piek werd bereikt. Door de veerkracht van het trampolinedoek ontstaat een kleine vertraging: de landing wordt geschat op 74 ms v\'{o}\'{o}r de 50\%-kracht, afstoot op 88 ms erna \autocite{Ferger2019}. Figuur~\ref{fig:krachtcurve} toont een voorbeeld van deze kracht-tijd curve waarop de landing en afstoot zijn aangeduid.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{./img/ToF_meting.jpg}
+    \caption{Voorbeeld van een kracht-tijd curve ter illustratie van de schatting van afstoot en landing 
+        \autocite{Ferger2019}.}
+    \label{fig:krachtcurve}
+\end{figure}
+
+
+% Eerder onderzoek naar camera based HD berekenen
+\subsection{Camerasystemen}
+
+Het onderzoek van \textcite{Park2022} presenteert een camerasysteem dat de driedimensionale voetposities op een fitnesstrampoline bepaalt, wat relevant is voor het begrijpen hoe nauwkeurig camera-gebaseerde systemen horizontale verplaatsing en vluchttijd kunnen registreren.
+
+% Beschrijven wat bevindingen waren en wat de aanpak is
+Het ontwikkelde systeem maakt gebruik van een camera met fisheye-lens die onder de trampoline geplaatst werd om de schaduwen van de voeten te registreren. De beelden werden omgezet naar grijswaarden en vervolgens genormaliseerd om variaties in belichting of contrast te verminderen.
+
+Voor het bepalen van de voetposities wordt een deep learning-model gebruikt die gebaseerd is op ResNet-50. Dit model geeft een voorspelling van de co\"{o}rdinaten van de voeten terug.
+
+De resultaten tonen een gemiddelde totale afwijking van 11.7 mm, wat erop wijst dat deze methode nauwkeurig genoeg is om de landingszones op een trampoline te bepalen.
+
+Een beperking van het systeem is dat de nauwkeurigheid afneemt nabij de randen van de trampoline. Aangezien dergelijk systeem enkel gebruikt zou worden tijdens trainingen, blijft dit voor de meeste praktische toepassingen een acceptabele beperking.
+
+% Refereren naar de literatuur kan met:
+% \autocite{BIBTEXKEY} => (Auteur, jaartal): voor een referentie tussen
+% haakjes, waar de auteursnaam GEEN onderdeel is van een zin.
+% \textcite{BIBTEXKEY} => Auteur (jaartal): voor een narratieve referentie,
+% waar de naam van de auteur effectief een onderdeel is van de zin.
+
+\section{Methodologie}
 \label{sec:methodologie}
 
-Hier beschrijf je hoe je van plan bent het onderzoek te voeren. Welke onderzoekstechniek ga je toepassen om elk van je onderzoeksvragen te beantwoorden? Gebruik je hiervoor literatuurstudie, interviews met belanghebbenden (bv.~voor requirements-analyse), experimenten, simulaties, vergelijkende studie, risico-analyse, PoC, \ldots?
+% TODO: Methodologie Agile maken
 
-Valt je onderwerp onder één van de typische soorten bachelorproeven die besproken zijn in de lessen Research Methods (bv.\ vergelijkende studie of risico-analyse)? Zorg er dan ook voor dat we duidelijk de verschillende stappen terug vinden die we verwachten in dit soort onderzoek!
+Om de risico's te beperken en flexibel in te spelen op nieuwe inzichten, wordt een Agile-werkwijze gehanteerd. In tegenstelling tot een watervalmodel, lopen literatuurstudie, dataverzameling en ontwikkeling gedeeltelijk parallel en be\"{i}nvloeden ze elkaar continu. Het onderzoek is opgedeeld in een voorbereidende fase en een iteratieve uitvoeringsfase.
 
-Vermijd onderzoekstechnieken die geen objectieve, meetbare resultaten kunnen opleveren. Enquêtes, bijvoorbeeld, zijn voor een bachelorproef informatica meestal \textbf{niet geschikt}. De antwoorden zijn eerder meningen dan feiten en in de praktijk blijkt het ook bijzonder moeilijk om voldoende respondenten te vinden. Studenten die een enquête willen voeren, hebben meestal ook geen goede definitie van de populatie, waardoor ook niet kan aangetoond worden dat eventuele resultaten representatief zijn.
+Een schematisch overzicht van deze planning in grote lijnen is weergegeven in Figuur~\ref{fig:fasenverloop}.
 
-Uit dit onderdeel moet duidelijk naar voor komen dat je bachelorproef ook technisch voldoen\-de diepgang zal bevatten. Het zou niet kloppen als een bachelorproef informatica ook door bv.\ een student marketing zou kunnen uitgevoerd worden.
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{./img/gantt-PVA.png}
+    \caption{\label{fig:fasenverloop}Gantt-diagram met de iteratieve fasen en mijlpalen van het onderzoek.}
+\end{figure*}
 
-Je beschrijft ook al welke tools (hardware, software, diensten, \ldots) je denkt hiervoor te gebruiken of te ontwikkelen.
+\subsection{Fase 1: Probleemanalyse \& Validatie}
+Deze fase focust op het beantwoorden van de deelvragen binnen het probleemdomein en de initi\"{e}le validatie van de technische haalbaarheid.
 
-Probeer ook een tijdschatting te maken. Hoe lang zal je met elke fase van je onderzoek bezig zijn en wat zijn de concrete \emph{deliverables} in elke fase?
+\subsubsection{Requirements Analyse}
+Om de requirements op te stellen, wordt onderzocht aan welke minimale nauwkeurigheidseisen een alternatief systeem moet voldoen, wat het beschikbare budget bedraagt, en wat de effectieve noodzaak is binnen trampolineclubs.
 
-%---------- Verwachte resultaten ----------------------------------------------
-\section{Verwacht resultaat, conclusie}%
-\label{sec:verwachte_resultaten}
+\subsubsection{Technische Specificaties}
+Hierbij wordt gefocust op de exacte berekeningswijze van horizontale verplaatsing volgens offici\"{e}le reglementen en de variatie in trampoline-opstellingen. Daarnaast worden de financi\"{e}le aspecten, zoals de aankoop- en onderhoudskosten van het huidige HDTS-systeem, in kaart gebracht.
 
-Hier beschrijf je welke resultaten je verwacht. Als je metingen en simulaties uitvoert, kan je hier al mock-ups maken van de grafieken samen met de verwachte conclusies. Benoem zeker al je assen en de onderdelen van de grafiek die je gaat gebruiken. Dit zorgt ervoor dat je concreet weet welk soort data je moet verzamelen en hoe je die moet meten.
+\subsubsection{Hardware \& Eisen}
+Op basis van bovenstaand onderzoek zijn de functionele eisen en voorwaarden al deels vastgelegd. Daarnaast werden mogelijke camera-opstellingen reeds besproken met trainers om zowel de kwaliteit van de data als de veiligheid van gymnasten te waarborgen.
 
-Wat heeft de doelgroep van je onderzoek aan het resultaat? Op welke manier zorgt jouw bachelorproef voor een meerwaarde?
+\subsubsection{Initi\"{e}le Dataset (PoC)}
+Om de haalbaarheid van het oplossingsdomein vroegtijdig te toetsen, werd gedurende het eerste semester reeds de eerste data verzameld. Tijdens deze tests werd een beperking in de \textit{Field of View} (FOV) vastgesteld. Om dit probleem te verhelpen is een fisheye-lens aangeschaft. Met deze aangepaste configuratie kon nieuwe, bruikbare data worden opgenomen die als basis dient voor de eerste iteraties.
 
-Hier beschrijf je wat je verwacht uit je onderzoek, met de motivatie waarom. Het is \textbf{niet} erg indien uit je onderzoek andere resultaten en conclusies vloeien dan dat je hier beschrijft: het is dan juist interessant om te onderzoeken waarom jouw hypothesen niet overeenkomen met de resultaten.
+\subsection{Fase 2: Iteratieve Ontwikkeling}
+In deze fase ligt de focus op de deelvragen van het oplossingsdomein (modelarchitectuur, pre-processing, data-augmentatie). Hierbij wordt er experimenteel gezocht naar de optimale dataverwerking en dataflow door middel van iteratieve sprints. Elke sprint levert inzichten op die direct worden meegenomen in de volgende iteratie.
+
+\subsubsection{Onderzoek Architectuur \& Strategie}
+Voor de start van de iteraties wordt via literatuuronderzoek bepaald welke modelarchitectuur en welk labelformaat het meest geschikt zijn. Dit onderzoek vormt de basis voor de eerste iteratie, maar blijft een doorlopende activiteit om latere iteraties te ondersteunen.
+
+\subsubsection{Iteratie 1: Baseline MVP}
+De dataset uit de PoC-fase wordt gelabeld volgens de gekozen strategie. Een eerste prototype (MVP) wordt getraind om de effectiviteit van de gekozen architectuur te valideren.
+
+\subsubsection{Iteratieve Cyclus: Experimentele Validatie}
+Om de nauwkeurigheid stapsgewijs te maximaliseren, wordt gewerkt in opeenvolgende iteraties. Elke iteratie start met een analyse van het vorige model, gevolgd door gerichte experimenten:
+\begin{itemize}
+    \item \textbf{Data \& Pre-processing:} Uitbreiden van de dataset voor ondervertegenwoordigde klassen en testen van augmentatietechnieken (o.a. rotatie, belichting) voor betere robuustheid.
+    \item \textbf{Modelarchitectuur:} Aanpassen van de pipeline of hyperparameters op basis van de geïdentificeerde knelpunten, met kwantitatieve vergelijking tegen de baseline.
+\end{itemize}
+Dit cyclische proces beantwoordt de deelvragen over welke configuratie de hoogste nauwkeurigheid oplevert.
+
+\subsection{Finale Validatie}
+\label{sec:validatie}
+Het finale model wordt gevalideerd op een aparte testset die doorheen het proces is samengesteld. De prestatie wordt kwantitatief ge\"{e}valueerd aan de hand van relevante metrieken zoals Mean Absolute Error (MAE) en Mean Absolute Percentage Error (MAPE).
+
+% Snippet voor een afbeelding dat je bv kan gebruiken voor een Gantt-diagram.
+%
+% We gebruiken hier de figure*-omgeving zodat de figuur over beide kolommen
+% gespreid wordt voor betere leesbaarheid. Probeer de positionering van
+% figuren niet te manipuleren (met bv [ht!]), maar zorg altijd voor een
+% zinvol bijschrift en label, en refereer er naar in de tekst.
+%
+% Bij afbeeldingen die je overneemt, sluit je het bijschrift af met een
+% bronvermelding (commando \autocite).
+%
+% \begin{figure*}
+    %   \centering
+    %   \includegraphics[width=\textwidth]{example-image-16x9}
+    %   \caption{\label{fig:gantt}Gantt diagram met de verschillende fasen en milestones van het onderzoek.}
+    % \end{figure*}
+
+\section{Verwachte resultaten}
+\label{sec:verwachte-resultaten}
+
+% TODO: Verwachte resultaten herwerken
+Op basis van het literatuuronderzoek wordt verwacht dat een computer vision-systeem een haalbaar en kosteneffici\"{e}nt alternatief vormt voor het bestaande HDTS-systeem bij trampolinespringen.
+
+Een cameraconfiguratie bestaand uit een onderaanzicht en een zijaanzicht wordt verondersteld de beste resultaten te leveren.
+
+Voor de voorspellingen van de HD-score wordt een MAPE van minder dan 15\% verwacht. Voor de ToF-score, die gebaseerd is op de tijdsverschillen tussen frames van afzet en landing, wordt een MAE van minder dan 1 seconde verwacht.
+Wat betreft de kostprijs van de volledige opstelling wordt gericht op minder dan \euro{}500, wat 90-95\% goedkoper is dan het HDTS-systeem.
+
+\section{Discussie, verwachte conclusie}
+\label{sec:discussie-conclusie}
+
+% TODO: Conclusie en discussie herwerken
+
+Hoewel het systeem geen vervanging vormt voor het offici\"{e}le HDTS-systeem, kan het wel een betaalbaar alternatief bieden voor turnclubs tijdens trainingssessies en voorbereidingen. Zeker voor kleinere clubs, waar financi\"{e}le middelen vaak beperkt zijn, biedt dit systeem de mogelijkheid om scores voor HD en ToF automatisch in te schatten. Hierdoor kunnen gymnasten effici\"{e}nter trainen, omdat zij zich volledig kunnen richten op de uitvoering van hun oefeningen, terwijl het systeem automatisch de prestatiegegevens registreert.
+
+De meerwaarde van dit onderzoek ligt in het aantonen van de haalbaarheid van een eenvoudiger en goedkoper alternatief voor het HDTS-systeem in trampolinespringen. Deze benadering kan ook andere sportdisciplines inspireren om met computer vision-technologie te experimenteren.
+
+De resultaten zijn nog niet zo nauwkeurig als die van het commerciële systeem, maar het onderzoek toont wel aan dat verdere ontwikkeling mogelijk is. Het verslag van de foutenanalyse kan als startpunt fungeren voor toekomstig onderzoek.
+
+Het prototype biedt potentieel voor valorisatie. Met verdere ontwikkeling kan het systeem evolueren naar een betaalbaar eindproduct voor trainingsdoeleinden. Door de opstelling te vereenvoudigen, de hardware te standaardiseren en de gebruiksvriendelijkheid te verhogen, kan een zekere waarde worden toegevoegd aan het prototype.
+
+In conclusie toont dit onderzoek aan dat een computer vision-systeem veelbelovend is. Hoewel de resultaten nog niet perfect zijn, vormt het een goede basis voor verdere ontwikkeling.
 
