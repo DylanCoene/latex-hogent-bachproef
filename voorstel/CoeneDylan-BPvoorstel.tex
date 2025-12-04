@@ -29,7 +29,7 @@
 \email{dylan.coene@student.hogent.be}
 
 % TODO: Geef de co-promotor op
-\supervisor[Co-promotor]{S. Beekman (Bedrijfnaam, \href{mailto:sigrid.beekman@bedrijfnaam.be}{sigrid.beekman@bedrijfnaam.be})}
+\supervisor[Co-promotor]{J. Doe (Bedrijfnaam, \href{mailto:sigrid.beekman@bedrijfnaam.be}{john.doe@bedrijfnaam.be})}
 
 % Binnen welke specialisatierichting uit 3TI situeert dit onderzoek zich?
 % Kies uit deze lijst:
@@ -48,11 +48,11 @@
 \begin{document}
 
 \begin{abstract}
-   In competitief trampolinespringen wordt een HDTS Trampoline Measurement Device (HDTS) gebruikt om de horizontale verplaatsing (horizontal displacement, HD) en vluchttijd (time of flight, ToF) te meten voor scoreberekening. Door de hoge kostprijs van dit systeem kunnen turnclubs met beperkte middelen geen toegang krijgen tot het automatisch meten van deze parameters bij voorbereiding op competities. Atleten zijn hierdoor genoodzaakt een video-opname van hun prestatie te analyseren om manueel scores voor HD en ToF te berekenen. In dit onderzoek wordt nagegaan in welke mate een computer vision-systeem HD en ToF kan registreren in trampolinespringen als low-cost alternatief voor een HDTS-systeem.
-  
-  Om dit te realiseren, start het onderzoek met een requirementsanalyse, gevolgd door een vergelijking van verschillende cameraconfiguraties om de optimale opstelling te bepalen voor beeldopname. Vervolgens wordt een dataset opgesteld met video-opnames van sprongreeksen. De opnames worden gelabeld met de landingsposities, contactmomenten en totale scores voor HD en ToF. Op basis van deze dataset wordt een model ontwikkeld dat automatisch HD en ToF berekent. Tot slot wordt de nauwkeurigheid van het systeem ge\"{e}valueerd.
-  
-  Er wordt een prototype ontwikkeld dat gebruikmaakt van computer vision om automatisch scorecomponenten voor HD en ToF te berekenen op basis van videobeelden gemaakt met een vaste cameraopstelling. Dit prototype wordt getest op een dataset met opnames van sprongreeksen en moet een gemiddelde procentuele afwijking van minder dan 15\% op HD en een gemiddelde absolute afwijking van minder dan 1 seconde op ToF behalen. Dit resultaat maakt het systeem voldoende betrouwbaar voor gebruik tijdens trainingen, maar niet voor offici\"{e}le scoreberekeningen.
+    In competitief trampolinespringen wordt een HDTS Trampoline Measurement Device (HDTS) gebruikt om de horizontale verplaatsing (horizontal displacement, HD) en vluchttijd (time of flight, ToF) te meten voor scoreberekening. Door de hoge kostprijs van dit systeem kunnen turnclubs met beperkte middelen geen toegang krijgen tot het automatisch meten van deze parameters bij voorbereiding op competities. Atleten zijn hierdoor genoodzaakt een video-opname van hun prestatie te analyseren om manueel scores te berekenen. In dit onderzoek wordt nagegaan in welke mate een computer vision-systeem HD en ToF kan registreren als low-cost alternatief voor een HDTS-systeem.
+    
+    Om dit te realiseren, hanteert het onderzoek een Agile-werkwijze. Het traject start met een requirementsanalyse en een \textit{Proof of Concept}, waaruit een optimale configuratie met een fisheye-lens is voortgekomen. Vervolgens wordt een dataset opgesteld met video-opnames van sprongreeksen, gelabeld met landingsposities en contactmomenten. Op basis hiervan wordt via iteratieve sprints een model ontwikkeld dat automatisch HD en ToF berekent. Tot slot wordt de nauwkeurigheid van het systeem ge\"{e}valueerd.
+    
+    Het resultaat is een werkend prototype met een vaste cameraopstelling. Dit systeem voldoet aan de vooropgestelde criteria: de totale hardwarekost bedraagt minder dan \euro{}500, de gemiddelde procentuele afwijking (MAPE) voor HD is minder dan 15\% en de gemiddelde absolute afwijking (MAE) voor ToF is minder dan 1 seconde. Het prototype is daarmee voldoende betrouwbaar voor gebruik tijdens trainingen, maar vereist nog verdere verfijning voor officiële scoreberekeningen. Dit onderzoek toont de haalbaarheid aan van een betaalbaar alternatief dat geavanceerde sporttechnologie toegankelijker maakt.
 \end{abstract}
 
 \tableofcontents
