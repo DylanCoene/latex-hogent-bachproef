@@ -52,7 +52,7 @@ Vervolgens wordt gekeken naar de technische realisatie van een alternatief syste
 \end{enumerate}
 
 \subsection*{Onderzoeksdoelstelling}
-Het doel van dit onderzoek is om een proof of concept te ontwikkelen van een kosteneffectief alternatief voor commerciële HDTS-systemen. Hierbij wordt gestreefd naar een systeem dat de horizontale verplaatsing en vluchttijd kan bepalen met een betrouwbaarheid van meer dan 80\%, binnen het budget van een gemiddelde sportclub.
+Het doel van dit onderzoek is om een proof of concept te ontwikkelen van een kosteneffectief alternatief voor commerciële HDTS-systemen. Hierbij wordt gestreefd naar een systeem dat de horizontale verplaatsing en vluchttijd kan bepalen met een nauwkeurigheid van minstens 90\%, binnen het budget van een gemiddelde sportclub.
 
 
 \section{Literatuurstudie}
@@ -212,7 +212,7 @@ Dit cyclische proces beantwoordt de deelvragen over welke configuratie de hoogst
 
 \subsection{Finale Validatie}
 \label{sec:validatie}
-Het finale model wordt gevalideerd op een aparte testset die doorheen het proces is samengesteld. De prestatie wordt kwantitatief geëvalueerd aan de hand van relevante metrieken zoals Mean Absolute Error (MAE) en Mean Absolute Percentage Error (MAPE).
+Het finale model wordt gevalideerd op een aparte testset die gaandeweg is samengesteld. De prestaties worden kwantitatief geëvalueerd via relevante metrieken: de MAE en MAPE voor de vluchttijd, en de accuracy en F1-score voor de horizontale verplaatsing.
 
 % Snippet voor een afbeelding dat je bv kan gebruiken voor een Gantt-diagram.
 %
@@ -235,7 +235,7 @@ Het finale model wordt gevalideerd op een aparte testset die doorheen het proces
 
 Op basis van de literatuurstudie wordt verwacht dat het computer vision-systeem een haalbaar en kostenefficiënt alternatief vormt voor het commerciële HDTS-systeem. De totale kostprijs van het prototype wordt op minder dan \euro{}500 geschat, wat een aanzienlijke besparing betekent ten opzichte van de huidige standaard.
 
-Wat de modelprestaties betreft, is de doelstelling om een afwijking van minder dan 1 seconde voor de ToF te bereiken. Voor HD streeft het systeem ernaar om in minimaal 80\% van de gevallen de juiste landingszone te classificeren. Figuur~\ref{fig:mockup_confusion} toont een mock-up visualisatie van deze verwachte prestatie voor HD door middel van een verwarringsmatrix.
+Wat de modelprestaties betreft, is de doelstelling om voor de ToF een MAE van minder dan 0.2 seconden te bereiken over de volledige reeks. Voor de HD streeft het systeem naar een classificatienauwkeurigheid van minimaal 90\% voor de correcte landingszone. Figuur~\ref{fig:mockup_confusion} toont een mock-up visualisatie van deze verwachte prestatie voor HD door middel van een verwarringsmatrix.
 
 \begin{figure}
     \centering
