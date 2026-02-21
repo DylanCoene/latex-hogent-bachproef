@@ -1,6 +1,6 @@
 {
-  "latex-workshop.latex.outDir": "../output",
-  "latex-workshop.latex.recipes": [
+    "latex-workshop.latex.outDir": "../output",
+    "latex-workshop.latex.recipes": [
         {
             "name": "xelatex ➞ biber ➞ xelatex× 2",
             "tools": [
@@ -30,7 +30,7 @@
                 "-f",
                 "-xelatex",
                 "-shell-escape",
-                "-synctex=1",
+                "-synctex=0",
                 "-interaction=nonstopmode",
                 "-file-line-error",
                 "-outdir=%OUTDIR%",
@@ -42,21 +42,24 @@
         },
         {
             "args": [
-                "-synctex=1",
+                "-synctex=0",
                 "-interaction=nonstopmode",
                 "-shell-escape",
-                "-output-directory=%OUTDIR%",
+                "-output-directory=C:/Users/dylan/Desktop/School/latex-hogent-bachproef/bachproef",
+                "-aux-directory=C:/Users/dylan/Desktop/School/latex-hogent-bachproef/bachproef/output",
                 "-file-line-error",
                 "%DOC%"
             ],
             "command": "xelatex",
-            "env": {},
+            "env": {
+                "TEXMF_OUTPUT_DIRECTORY": "C:/Users/dylan/Desktop/School/latex-hogent-bachproef/bachproef/output"
+            },
             "name": "xelatex"
         },
         {
             "args": [
-                "--input-directory=%OUTDIR%",
-                "--output-directory=%OUTDIR%",
+                "--input-directory=C:/Users/dylan/Desktop/School/latex-hogent-bachproef/bachproef/output",
+                "--output-directory=C:/Users/dylan/Desktop/School/latex-hogent-bachproef/bachproef/output",
                 "%DOCFILE%"
             ],
             "command": "biber",
@@ -111,8 +114,9 @@
     "latex-workshop.latex.autoBuild.cleanAndRetry.enabled": false,
     "latex-workshop.latex.autoBuild.interval": 30000,
     "latex-workshop.latex.clean.subfolder.enabled": true,
+    "latex-workshop.formatting.latex": "latexindent",
     "latex-workshop.latex.magic.args": [
-        "-synctex=1",
+        "-synctex=0",
         "-interaction=nonstopmode",
         "-outputdir=%OUTDIR%",
         "-file-line-error",
