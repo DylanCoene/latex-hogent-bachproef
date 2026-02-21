@@ -1,0 +1,24 @@
+%%=============================================================================
+%% Intrinsieke Camerakalibratie
+%%=============================================================================
+
+\section{Intrinsieke camerakalibratie}
+\label{sec:kalibratie}
+
+Voordat een homografie kan worden berekend, moet de vervorming van de cameralens worden gecorrigeerd. Een homografietransformatie veronderstelt immers dat rechte lijnen in de wereld ook rechte lijnen zijn in het beeld. Elke cameralens introduceert echter een zekere mate van vervorming, waardoor dit niet langer geldt. Het doel van deze fase is dan ook om de \textit{intrinsieke cameraparameters} te bepalen zodat elk videoframe kan worden rechtgetrokken voordat de verdere beeldverwerking plaatsvindt.
+
+De gebruikte aanpak is gebaseerd op de methode van \textcite{Zhang2000}, die ook door OpenCV als standaard wordt gehanteerd. Hierbij wordt een schaakbordpatroon (\textit{checkerboard}) gefilmd vanuit meerdere hoeken en afstanden. Het algoritme detecteert automatisch de hoekpunten van het schaakbord in elk frame en berekent op basis van de gekende afmetingen en de geobserveerde vervorming de volgende parameters:
+
+\begin{itemize}
+    \item De \textbf{camerakalibratiematrix} $K$, die de brandpuntsafstand ($f_x, f_y$) en het optische middelpunt ($c_x, c_y$) bevat:
+    \[
+    K = \begin{bmatrix} 
+    f_x & 0 & c_x \\
+    0 & f_y & c_y \\
+    0 & 0 & 1
+    \end{bmatrix}
+    \]
+    \item De \textbf{distortiecoëfficiënten}, die beschrijven hoe de lens het beeld vervormt.
+\end{itemize}
+
+Na bepaling van deze parameters wordt elk frame van de opgenomen video ontvormd met behulp van \texttt{cv2.undistort} uit de OpenCV-bibliotheek. De kwaliteit van deze kalibratie wordt gemeten aan de hand van de \textit{reprojection error}: het verschil in pixels tussen de geobserveerde en de terug berekende hoekpunten van het schaakbord. Een waarde kleiner dan 1 pixel wordt hierbij als aanvaardbaar beschouwd.

@@ -2,15 +2,12 @@
 %% Methodologie
 %%=============================================================================
 
-\chapter{\IfLanguageName{dutch}{Methodologie}{Methodology}}%
-\label{ch:methodologie}
-
 %% TODO: In dit hoofstuk geef je een korte toelichting over hoe je te werk bent
 %% gegaan. Verdeel je onderzoek in grote fasen, en licht in elke fase toe wat
 %% de doelstelling was, welke deliverables daar uit gekomen zijn, en welke
 %% onderzoeksmethoden je daarbij toegepast hebt. Verantwoord waarom je
 %% op deze manier te werk gegaan bent.
-%% 
+%%
 %% Voorbeelden van zulke fasen zijn: literatuurstudie, opstellen van een
 %% requirements-analyse, opstellen long-list (bij vergelijkende studie),
 %% selectie van geschikte tools (bij vergelijkende studie, "short-list"),
@@ -26,5 +23,36 @@
 %% Maak voor elke fase (behalve het literatuuronderzoek) een NIEUW HOOFDSTUK aan
 %% en geef het een gepaste titel.
 
-\lipsum[21-25]
+\chapter{\IfLanguageName{dutch}{Methodologie}{Methodology}}%
+\label{ch:methodologie}
 
+\section{Overzicht en werkwijze}
+\label{sec:methodologie-overzicht}
+
+Dit onderzoek volgt een iteratieve, experimentele aanpak. Gezien de verkennende aard van het onderzoek, waarbij een nieuw meetsysteem wordt ontwikkeld waarvoor geen gestandaardiseerde methode bestaat, is een lineaire watervalaanpak niet geschikt. In plaats daarvan wordt er gewerkt in opeenvolgende stappen, waarbij elke stap voortbouwt op de inzichten van de vorige.
+
+%----------------------------------------------------------------------
+
+\section{Initiële verkenning: diepteschatting via ondercamera}
+\label{sec:methodologie-verkenning}
+
+Voorafgaand aan de formele onderzoeksfasen werd een eerste exploratieve test uitgevoerd om de haalbaarheid van het oplossingsdomein af te toetsen. Hiervoor werd een iPhone 13 camera, uitgerust met een externe fisheye-lens, onder de trampoline geplaatst om een onderaanzicht te verkrijgen. Aangezien deze test louter exploratief van aard was, werd er in deze fase nog geen lenskalibratie uitgevoerd om de vervorming van de fisheye-lens te corrigeren.
+
+Ondanks de fisheye-lens kon niet de volledige oppervlakte van de trampoline in beeld worden gebracht; hoewel het grootste deel zichtbaar was, bleven bepaalde randzones buiten het bereik van de camera. Op de opgenomen beelden werd het \textit{Depth Anything v3}-model toegepast, een state-of-the-art model voor monoculaire diepteschatting. De doelstelling was om te onderzoeken of het model de vervorming van het trampolinedoek tijdens een sprong kon vastleggen als indicatie van de landingspositie.
+
+De resultaten waren echter onvoldoende. Aangezien het trampolinedoek uit dit perspectief semi-transparant is, biedt het nauwelijks textuur of visuele referentie voor een dieptemodel. Bijgevolg kon het model geen betrouwbare dieptekaart genereren. Bovendien vervormde het doek op het dieptepunt van de landing zo sterk, dat het overzicht in het beeld verloren ging. Dit maakte een betrouwbare voorspelling van de horizontale verplaatsing mateloos complex. Figuur~\ref{fig:diepteschatting-verkenning} toont een vergelijking tussen een origineel camerabeeld en de bijbehorende dieptemap. Dit leidde tot een heroriëntering naar een homografiegebaseerde methode via een schuin zijdelings aanzicht.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{depth_anything_test}
+    \caption[Vergelijking originele beelden en dieptemap]{Vergelijking tussen originele beelden en de dieptemap via Depth Anything v3.}
+    \label{fig:diepteschatting-verkenning}
+\end{figure}
+
+%----------------------------------------------------------------------
+
+\input{fase1_kalibratie}
+\input{fase2_homografie}
+\input{fase3_yolo}
+\input{fase4_tof}
+\input{fase5_pose}
