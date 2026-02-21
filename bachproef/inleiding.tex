@@ -5,39 +5,43 @@
 \chapter{\IfLanguageName{dutch}{Inleiding}{Introduction}}%
 \label{ch:inleiding}
 
-De inleiding moet de lezer net genoeg informatie verschaffen om het onderwerp te begrijpen en in te zien waarom de onderzoeksvraag de moeite waard is om te onderzoeken. In de inleiding ga je literatuurverwijzingen beperken, zodat de tekst vlot leesbaar blijft. Je kan de inleiding verder onderverdelen in secties als dit de tekst verduidelijkt. Zaken die aan bod kunnen komen in de inleiding~\autocite{Pollefliet2011}:
+Trampolinespringen is een technische en complexe sport, waarbij atleten beoordeeld worden op basis van verschillende componenten: moeilijkheidsgraad (D), uitvoering (E), horizontale verplaatsing (HD) en vluchttijd (ToF). De eindscore van een routine, die in competitieverband uit 10 sprongen bestaat, wordt berekend met de formule: $E + HD + D + TOF - P$. Hierbij staat $P$ voor de eventuele aftrek van strafpunten (\textit{penalties}), die door de jury worden toegekend bij specifieke overtredingen of onderbrekingen \autocite{FTTC2024}.
 
-\begin{itemize}
-  \item context, achtergrond
-  \item afbakenen van het onderwerp
-  \item verantwoording van het onderwerp, methodologie
-  \item probleemstelling
-  \item onderzoeksdoelstelling
-  \item onderzoeksvraag
-  \item \ldots
-\end{itemize}
+In officiële competities is het HDTS Trampoline Measurement Device de standaard voor het objectief meten van HD en ToF. Dit systeem werkt met vier krachtplaten onder de poten van de trampoline om via krachtverhoudingen de exacte landingspositie en timing te bepalen \autocite{Ferger2017,Ferger2019}.
 
 \section{\IfLanguageName{dutch}{Probleemstelling}{Problem Statement}}%
 \label{sec:probleemstelling}
+Ondanks de effectiviteit van de huidige technologie, vormt de hoge kostprijs van het HDTS-systeem een hoge drempel voor veel turnclubs. De prijs van het systeem ligt tussen \euro{}5.000 en \euro{}10.000. De financi{\"e}le druk op de Vlaamse sportsector beperkt de investeringsruimte voor dergelijke apparatuur aanzienlijk \autocite{Sporza2025}. 
 
-Uit je probleemstelling moet duidelijk zijn dat je onderzoek een meerwaarde heeft voor een concrete doelgroep. De doelgroep moet goed gedefinieerd en afgelijnd zijn. Doelgroepen als ``bedrijven,'' ``KMO's'', systeembeheerders, enz.~zijn nog te vaag. Als je een lijstje kan maken van de personen/organisaties die een meerwaarde zullen vinden in deze bachelorproef (dit is eigenlijk je steekproefkader), dan is dat een indicatie dat de doelgroep goed gedefinieerd is. Dit kan een enkel bedrijf zijn of zelfs één persoon (je co-promotor/opdrachtgever).
-
-\section{\IfLanguageName{dutch}{Onderzoeksvraag}{Research question}}%
-\label{sec:onderzoeksvraag}
-
-Wees zo concreet mogelijk bij het formuleren van je onderzoeksvraag. Een onderzoeksvraag is trouwens iets waar nog niemand op dit moment een antwoord heeft (voor zover je kan nagaan). Het opzoeken van bestaande informatie (bv. ``welke tools bestaan er voor deze toepassing?'') is dus geen onderzoeksvraag. Je kan de onderzoeksvraag verder specifiëren in deelvragen. Bv.~als je onderzoek gaat over performantiemetingen, dan 
+Dit creëert een ongelijkheid in de sport: atleten bij clubs met beperkte middelen hebben geen toegang tot automatische metingen tijdens hun trainingen en zijn genoodzaakt hun prestaties te analyseren via tijdsintensieve, manuele video-analyses. Er is dan ook een duidelijke nood aan een toegankelijker en goedkoper alternatief.
 
 \section{\IfLanguageName{dutch}{Onderzoeksdoelstelling}{Research objective}}%
 \label{sec:onderzoeksdoelstelling}
 
-Wat is het beoogde resultaat van je bachelorproef? Wat zijn de criteria voor succes? Beschrijf die zo concreet mogelijk. Gaat het bv.\ om een proof-of-concept, een prototype, een verslag met aanbevelingen, een vergelijkende studie, enz.
+Het doel van dit onderzoek is om een \textit{proof-of-concept} te ontwikkelen van een kosteneffectief alternatief voor commerciële HDTS-systemen op basis van computer vision. Het beoogde resultaat is een werkend prototype met een vaste cameraopstelling die voldoet aan de volgende criteria:
+\begin{itemize} % TODO: Evaluatiecriteria realistischer maken
+    \item Een totale hardwarekost van minder dan €500.
+    \item Een classificatienauwkeurigheid voor HD-zones van minstens 90\%.
+    \item Een gemiddelde absolute afwijking (MAE) voor de vluchttijd van minder dan 0.2 seconden.
+\end{itemize}
+
+\section{\IfLanguageName{dutch}{Onderzoeksvraag}{Research question}}%
+\label{sec:onderzoeksvraag}
+
+De centrale hoofdvraag van deze bachelorproef luidt: 
+\textit{Hoe kan een goedkoop computer vision-systeem worden ontwikkeld dat horizontale verplaatsing en vluchttijd bij trampolinespringen accuraat kan meten, als betaalbaar alternatief voor het HDTS-meetsysteem?}
+
+Om deze vraag te beantwoorden, worden onder meer de volgende deelvragen behandeld:
+\begin{itemize}
+    \item Welke hardware-configuratie (resolutie, framerate en positie) levert de beste balans tussen toegankelijkheid, gebruiksgemak en nauwkeurigheid op?
+    \item Welke computer vision-technieken zijn het meest geschikt voor het detecteren van landingsposities en contactmomenten? % Homography transformation, object detection, pose estimation, ...
+    \item Welke pre-processing stappen zijn noodzakelijk om correcte inschattingen van HD en ToF te kunnen maken? % Camera calibration, lens distortion correctie, ...
+    \item Welke state-of-the-art modellen kunnen bijdragen aan een hogere nauwkeurigheid? % pose estimation, depth estimation, ...
+    \item Is het effectiever om contactmoment- en positiedetectie te scheiden, of biedt een end-to-end model betere resultaten?
+\end{itemize}
 
 \section{\IfLanguageName{dutch}{Opzet van deze bachelorproef}{Structure of this bachelor thesis}}%
 \label{sec:opzet-bachelorproef}
-
-% Het is gebruikelijk aan het einde van de inleiding een overzicht te
-% geven van de opbouw van de rest van de tekst. Deze sectie bevat al een aanzet
-% die je kan aanvullen/aanpassen in functie van je eigen tekst.
 
 De rest van deze bachelorproef is als volgt opgebouwd:
 
