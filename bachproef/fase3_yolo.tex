@@ -1,0 +1,21 @@
+%%=============================================================================
+%% Objectdetectie en positiebepaling
+%%=============================================================================
+
+\section{Objectdetectie en positiebepaling}
+\label{sec:yolo}
+
+Met een gekalibreerde camera en berekende homografiematrix is het doel van deze fase om een \textit{first proof-of-concept} te realiseren voor de meting van horizontale verplaatsing (HD). Hiervoor wordt een objectdetectiemodel ingezet om de springframework per frame te lokaliseren en zijn positie op de mat te projecteren.
+
+Als detectiemodel wordt YOLOv11 gebruikt~\autocite{Jocher_Ultralytics_YOLO_2023}. Dit model is geschikt omwille van zijn hoge verwerkingssnelheid en goede prestaties bij personendetectie. De pipeline verloopt als volgt:
+
+\begin{enumerate}
+    \item YOLOv11 detecteert de springer in elk frame en geeft een \textit{bounding box} terug.
+    \item Het zwaartepunt (middelpunt) van de bounding box wordt berekend in pixelcoördinaten $(u, v)$. Aan de hand van de verticale snelheid van dit centroïd wordt eveneens een inschatting gemaakt over welk frame het landingsmoment is.
+    \item Dit zwaartepunt wordt via de homografiematrix $H$ omgezet naar de matcoördinaat $(x, y)$ in meters.
+    \item Op basis van de offici{\"e}le HD-zones wordt bepaald in welke zone de springer landt.
+\end{enumerate}
+
+Het gebruik van een bounding box zwaartepunt als referentiepunt kent een inherente beperking: de grootte en positie van de bounding box vari{\"e}ren afhankelijk van de houding van de springer (bv.\ gestrekte armen vs.\ een gekromde sprong). Dit kan leiden tot een systematische fout in de geprojecteerde positie. Deze beperking motiveert de overgang naar Pose Estimation in Fase~5.
+
+De gemeten landingszones worden vergeleken met manueel bepaalde referentieposities. De nauwkeurigheid wordt uitgedrukt als een percentage correct geclassificeerde landingszones (accuracy) en als een gemiddelde afwijking in meters.
