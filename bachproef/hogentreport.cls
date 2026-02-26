@@ -298,7 +298,7 @@
         \IfLanguageName{dutch}{Departement Bedrijf en Organisatie}%
             {School of Business Management}%
     \or % dbt
-        \IfLanguageName{dutch}{Departement Biowetenschappen en Industriële Technologie}%
+        \IfLanguageName{dutch}{Departement Biowetenschappen en Industri{\"e}le Technologie}%
             {School of Bioscience and Industrial Technology}%
     \or %dgz
         \IfLanguageName{dutch}{Departement Gezondheidszorg}%

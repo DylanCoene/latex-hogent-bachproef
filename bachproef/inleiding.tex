@@ -7,18 +7,18 @@
 
 Trampolinespringen is een technische en complexe sport, waarbij atleten beoordeeld worden op basis van verschillende componenten: moeilijkheidsgraad (D), uitvoering (E), horizontale verplaatsing (HD) en vluchttijd (ToF). De eindscore van een routine, die in competitieverband uit 10 sprongen bestaat, wordt berekend met de formule: $E + HD + D + TOF - P$. Hierbij staat $P$ voor de eventuele aftrek van strafpunten (\textit{penalties}), die door de jury worden toegekend bij specifieke overtredingen of onderbrekingen \autocite{FTTC2024}.
 
-In officiële competities is het HDTS Trampoline Measurement Device de standaard voor het objectief meten van HD en ToF. Dit systeem werkt met vier krachtplaten onder de poten van de trampoline om via krachtverhoudingen de exacte landingspositie en timing te bepalen \autocite{Ferger2017,Ferger2019}.
+In offici{\"e}le competities is het HDTS Trampoline Measurement Device de standaard voor het objectief meten van HD en ToF. Dit systeem werkt met vier krachtplaten onder de poten van de trampoline om via krachtverhoudingen de exacte landingspositie en timing te bepalen \autocite{Ferger2017,Ferger2019}.
 
 \section{\IfLanguageName{dutch}{Probleemstelling}{Problem Statement}}%
 \label{sec:probleemstelling}
-Ondanks de effectiviteit van de huidige technologie, vormt de hoge kostprijs van het HDTS-systeem een hoge drempel voor veel turnclubs. De prijs van het systeem ligt tussen \euro{}5.000 en \euro{}10.000. De financi{\"e}le druk op de Vlaamse sportsector beperkt de investeringsruimte voor dergelijke apparatuur aanzienlijk \autocite{Sporza2025}. 
+Ondanks de effectiviteit van de huidige technologie, vormt de hoge kostprijs van het HDTS-systeem een hoge drempel voor veel turnclubs. De prijs van het systeem ligt tussen \euro{}5.000 en \euro{}10.000. De financi{\"e}le druk op de Vlaamse sportsector beperkt de investeringsruimte voor dergelijke apparatuur aanzienlijk \autocite{Sporza2025}.
 
-Dit creëert een ongelijkheid in de sport: atleten bij clubs met beperkte middelen hebben geen toegang tot automatische metingen tijdens hun trainingen en zijn genoodzaakt hun prestaties te analyseren via tijdsintensieve, manuele video-analyses. Er is dan ook een duidelijke nood aan een toegankelijker en goedkoper alternatief.
+Turnclubs met beperkte budgetten kunnen zich hierdoor geen HDTS-systeem veroorloven. Dit cre{\"e}ert een ongelijkheid, aangezien atleten in deze clubs geen toegang hebben tot automatische metingen van HD en ToF tijdens hun trainingen. Zij zijn genoodzaakt om hun prestaties te analyseren via tijdsintensieve, manuele video-analyses, wat ineffici{\"e}nt is.
 
 \section{\IfLanguageName{dutch}{Onderzoeksdoelstelling}{Research objective}}%
 \label{sec:onderzoeksdoelstelling}
 
-Het doel van dit onderzoek is om een \textit{proof-of-concept} te ontwikkelen van een kosteneffectief alternatief voor commerciële HDTS-systemen op basis van computer vision. Het beoogde resultaat is een werkend prototype met een vaste cameraopstelling die voldoet aan de volgende criteria:
+Het doel van dit onderzoek is om een \textit{proof-of-concept} te ontwikkelen van een kosteneffectief alternatief voor commerci{\"e}le HDTS-systemen op basis van computer vision. Het beoogde resultaat is een werkend prototype met een vaste cameraopstelling die voldoet aan de volgende criteria:
 \begin{itemize} % TODO: Evaluatiecriteria realistischer maken
     \item Een totale hardwarekost van minder dan €500.
     \item Een classificatienauwkeurigheid voor HD-zones van minstens 90\%.
