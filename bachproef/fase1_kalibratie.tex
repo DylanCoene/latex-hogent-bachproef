@@ -18,7 +18,7 @@ De gebruikte aanpak is gebaseerd op de methode van \textcite{Zhang2000}, die ook
     0 & 0 & 1
     \end{bmatrix}
     \]
-    \item De \textbf{distortiecoëfficiënten}, die beschrijven hoe de lens het beeld vervormt.
+    \item De \textbf{distortieco{\"e}ffici{\"e}nten}, die beschrijven hoe de lens het beeld vervormt.
 \end{itemize}
 
 Na bepaling van deze parameters wordt elk frame van de opgenomen video ontvormd met behulp van \texttt{cv2.undistort} uit de OpenCV-bibliotheek. De kwaliteit van deze kalibratie wordt gemeten aan de hand van de \textit{reprojection error}: het verschil in pixels tussen de geobserveerde en de terug berekende hoekpunten van het schaakbord. Een waarde kleiner dan 1 pixel wordt hierbij als aanvaardbaar beschouwd.

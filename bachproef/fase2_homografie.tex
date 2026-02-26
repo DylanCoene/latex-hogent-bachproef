@@ -12,8 +12,8 @@ Een homografie $H$ is een $3 \times 3$ matrix die de projectieve transformatie b
 
 De transformatie wordt bepaald door vier corresponderende puntenparen:
 \begin{enumerate}
-    \item De vier hoekpunten van de trampolinemat worden manueel geselecteerd in het videoframe (pixelcoördinaten).
-    \item De reële afmetingen van de trampoline (bijv. 4.28\,m $\times$ 2.14\,m) worden als doelcoördinaten opgegeven. % TODO: Concrete afmetingen van de trampoline
+    \item De vier hoekpunten van de trampolinemat worden in het videoframe (pixelcoördinaten) bepaald aan de hand van een \textit{landmark detection} model. Dit elimineert de nood aan manuele kalibratie en maakt de aanpak robuuster voor bewegende camerabeelden.
+    \item De re{\"e}le afmetingen van de trampoline (bijv. 4.28\,m $\times$ 2.14\,m) worden als doelcoördinaten opgegeven. % TODO: Concrete afmetingen van de trampoline
 \end{enumerate}
 
 Met behulp van \texttt{cv2.getPerspectiveTransform} of \texttt{cv2.findHomography} wordt de matrix $H$ berekend. Vervolgens kan elke pixel $(u, v)$ op het trampolinedoek worden omgezet naar een coördinaat $(x, y)$ via:
@@ -22,6 +22,6 @@ Met behulp van \texttt{cv2.getPerspectiveTransform} of \texttt{cv2.findHomograph
 \begin{pmatrix} x' \\ y' \\ w \end{pmatrix} = H \cdot \begin{pmatrix} u \\ v \\ 1 \end{pmatrix}, \quad (x, y) = \left(\frac{x'}{w},\, \frac{y'}{w}\right)
 \]
 
-De nauwkeurigheid van de homografie wordt geëvalueerd door meetpunten op bekende posities op de mat te projecteren en te vergelijken met de gecorrigeerde reële afstand. De verwachte maximale afwijking bedraagt enkele centimeters, afhankelijk van de cameraresolutie en de nauwkeurigheid van de handmatige hoekselectie.
+De nauwkeurigheid van de homografie wordt ge{\"e}valueerd door meetpunten op bekende posities op de mat te projecteren en te vergelijken met de gecorrigeerde re{\"e}le afstand. De verwachte maximale afwijking bedraagt enkele centimeters, afhankelijk van de cameraresolutie en de nauwkeurigheid van de handmatige hoekselectie.
 
 % TODO: Figuur die de homografie toont + plot van de evaluatie
