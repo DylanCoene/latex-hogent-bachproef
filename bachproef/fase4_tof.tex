@@ -1,0 +1,20 @@
+%%=============================================================================
+%% Vluchttijdschatting
+%%=============================================================================
+
+\section{ToF-schatting}
+\label{sec:tof}
+
+Naast de horizontale verplaatsing is de vluchttijd (ToF) een tweede kerncomponent van de eindscore. Het doel van deze fase is om de ToF en het exacte moment van contact te bepalen op basis van de framerate van de input video, zonder dat er extra sensoren aan te pas komen.
+
+Omdat de gekozen camera een schuin zijdelings aanzicht registreert, ligt de directe schatting van de absolute $z$-co{\"o}rdinaat (hoogte) niet voor de hand. In plaats daarvan wordt de ToF rechtstreeks opgemeten door middel van \textit{contactdetectie} en de bekende video-framerate.
+
+De ToF-inschatting gebeurt met behulp van de landingsframes die in Fase~\ref{sec:yolo} zijn bepaald op basis van de verticale snelheid. Door het frame-verschil tussen opeenvolgende contactmomenten te delen door de framerate van de video, wordt de tijd tussen landing en afstoot berekend. De uiteindelijke score voor vluchttijd wordt bepaald door de som van de tijd tussen deze contactmomenten te berekenen.
+
+De geschatte ToF-waarden worden vergeleken met een manueel bepaalde referentie, afgeleid uit video via frame-telling, en uitgedrukt in:
+\begin{itemize}
+    \item \textbf{MAE} (Mean Absolute Error): gemiddelde absolute afwijking in seconden.
+    \item \textbf{MAPE} (Mean Absolute Percentage Error): relatieve fout t.o.v.\ de referentiewaarde.
+\end{itemize}
+
+De doelstelling is een MAE van minder dan 0.2\,s over een volledige reeks van 10 sprongen.
