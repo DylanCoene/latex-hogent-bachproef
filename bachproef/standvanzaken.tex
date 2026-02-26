@@ -7,45 +7,102 @@
 
 % Pas na deze inleidende paragraaf komt de eerste sectiehoofding.
 
-Dit hoofdstuk bevat je literatuurstudie. De inhoud gaat verder op de inleiding, maar zal het onderwerp van de bachelorproef *diepgaand* uitspitten. De bedoeling is dat de lezer na lezing van dit hoofdstuk helemaal op de hoogte is van de huidige stand van zaken (state-of-the-art) in het onderzoeksdomein. Iemand die niet vertrouwd is met het onderwerp, weet nu voldoende om de rest van het verhaal te kunnen volgen, zonder dat die er nog andere informatie moet over opzoeken \autocite{Pollefliet2011}.
+Deze literatuurstudie is opgedeeld in twee delen. In het eerste deel wordt de scoreberekening en de reglementering binnen het trampolinespringen toegelicht. Het tweede deel omvat de huidige stand van zaken op het gebied van meettechnologie{\"e}n.
 
-Je verwijst bij elke bewering die je doet, vakterm die je introduceert, enz.\ naar je bronnen. In \LaTeX{} kan dat met het commando \texttt{$\backslash${textcite\{\}}} of \texttt{$\backslash${autocite\{\}}}. Als argument van het commando geef je de ``sleutel'' van een ``record'' in een bibliografische databank in het Bib\LaTeX{}-formaat (een tekstbestand). Als je expliciet naar de auteur verwijst in de zin (narratieve referentie), gebruik je \texttt{$\backslash${}textcite\{\}}. Soms is de auteursnaam niet expliciet een onderdeel van de zin, dan gebruik je \texttt{$\backslash${}autocite\{\}} (referentie tussen haakjes). Dit gebruik je bv.~bij een citaat, of om in het bijschrift van een overgenomen afbeelding, broncode, tabel, enz. te verwijzen naar de bron. In de volgende paragraaf een voorbeeld van elk.
+\section{Scoreberekening en Reglementering}
+\label{subsec:scoreberekening}
 
-\textcite{Knuth1998} schreef een van de standaardwerken over sorteer- en zoekalgoritmen. Experten zijn het erover eens dat cloud computing een interessante opportuniteit vormen, zowel voor gebruikers als voor dienstverleners op vlak van informatietechnologie~\autocite{Creeger2009}.
+Om het belang van HD en ToF bij de beoordeling te begrijpen, wordt eerst het algemene beoordelingsproces toegelicht zoals vastgelegd door de internationale gymnastiekfederatie.
 
-Let er ook op: het \texttt{cite}-commando voor de punt, dus binnen de zin. Je verwijst meteen naar een bron in de eerste zin die erop gebaseerd is, dus niet pas op het einde van een paragraaf.
+\subsection{Algemene Beoordeling}
+Volgens de FIG Code of Points \parencite{FTTC2024} bestaat een individuele oefening uit een reeks van 10 sprongen, waarvan de eindscore wordt bepaald op basis van vijf componenten:
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{grail.jpg}
-  \caption[Voorbeeld figuur.]{\label{fig:grail}Voorbeeld van invoegen van een figuur. Zorg altijd voor een uitgebreid bijschrift dat de figuur volledig beschrijft zonder in de tekst te moeten gaan zoeken. Vergeet ook je bronvermelding niet!}
+\begin{itemize}
+    \item $D$ - Moeilijkheidsgraad (Difficulty)
+    \item $E$ - Uitvoering (Execution)
+    \item $HD$ - Horizontale verplaatsing (Horizontal Displacement)
+    \item $ToF$ - Vluchttijd (Time of Flight)
+    \item $P$ - Strafpunten (Penalties)
+\end{itemize}
+
+De berekening van de eindscore gebeurt aan de hand van de volgende formule:
+
+\[
+\text{Eindscore} = E + HD + D + ToF - P
+\]
+
+In dit onderzoek ligt de focus specifiek op de HD en ToF componenten.
+
+\subsection{Horizontale Verplaatsing (HD)}
+De HD component geeft weer hoe vaak een gymnast tijdens zijn of haar sprongreeks afweek van het midden van de trampoline. Het trampolinebed is opgedeeld in zones. Afhankelijk van de zone waarin de voeten van de atleet landen, worden er strafpunten afgetrokken van een basisscore van 10 punten \autocite{FTTC2024}.
+
+Het midden van de trampoline geldt als ideale landingspositie zonder aftrek, terwijl elke zone die verder ligt van het midden geleidelijk hogere strafpunten oplevert. Figuur~\ref{fig:HD_zones} illustreert de hoeveelheid punten die per zone worden afgetrokken van de basisscore.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\linewidth]{HD_zones.jpg}
+    \caption{Indeling van zones op het trampolinebed voor het bepalen van strafpunten voor horizontale verplaatsing \autocite{FTTC2024}.}
+    \label{fig:HD_zones}
 \end{figure}
 
-\begin{listing}
-  \begin{minted}{python}
-    import pandas as pd
-    import seaborn as sns
+\subsection{Vluchttijd (ToF)}
+De ToF component omvat de totale tijd dat de gymnast zich in de lucht bevindt tijdens zijn of haar routine. Deze is belangrijk om twee redenen: enerzijds draagt ToF direct bij aan de totaalscore, anderzijds betekent een hogere ToF dat de gymnast meer tijd heeft om de technische componenten uit te voeren.
 
-    penguins = sns.load_dataset('penguins')
-    sns.relplot(data=penguins, x="flipper_length_mm", y="bill_length_mm", hue="species")
-  \end{minted}
-  \caption[Voorbeeld codefragment]{Voorbeeld van het invoegen van een codefragment.}
-\end{listing}
+Deze tijd wordt geregistreerd in duizendsten van een seconde en vervolgens afgerond naar beneden op een honderdste van een seconde. Zo zou een gymnast met een gemeten vluchttijd van 16.197 seconden een score krijgen van 16.19 voor ToF \autocite{FTTC2024}:
+\[
+16.197 \text{ seconden} \rightarrow \lfloor 16.197 \rfloor_{\downarrow 0.01} = 16.19 \text{ punten}
+\]
 
-\lipsum[7-20]
+\section{State-of-the-art Technologie{\"e}n}
+\label{subsec:state_of_the_art}
 
-\begin{table}
-  \centering
-  \begin{tabular}{lcr}
-    \toprule
-    \textbf{Kolom 1} & \textbf{Kolom 2} & \textbf{Kolom 3} \\
-    $\alpha$         & $\beta$          & $\gamma$         \\
-    \midrule
-    A                & 10.230           & a                \\
-    B                & 45.678           & b                \\
-    C                & 99.987           & c                \\
-    \bottomrule
-  \end{tabular}
-  \caption[Voorbeeld tabel]{\label{tab:example}Voorbeeld van een tabel.}
-\end{table}
+Er zijn verschillende methoden om de hierboven beschreven parameters te meten. Hieronder worden het huidige commerci{\"e}le standaardsysteem en recent relevant onderzoek naar alternatieve camera-gebaseerde methoden besproken.
+
+\subsection{Huidige Standaard: HDTS}
+\textcite{Ferger2017} beschrijven hoe de introductie van objectieve meetwaarden voor HD en ToF heeft geleid tot de ontwikkeling van het \emph{HDTS Trampoline Measurement Device}. Dit systeem, gekoppeld aan de Eurotramp \textit{Qira 1.03} software, geldt momenteel als de standaard in competities.
+
+Het systeem maakt gebruik van vier krachtplaten die geplaatst worden onder de poten van het trampolinerek. Voorafgaand aan gebruik kalibreert het systeem zichzelf automatisch. Op basis van de timing en verdeling van de gemeten krachten via de sensoren worden de waarden voor zowel HD als ToF berekend en real-time weergegeven \autocite{Dyas2023}.
+
+\paragraph{Berekening Horizontale Verplaatsing}
+De HD-waarde wordt bepaald door de landingsposities te berekenen op basis van de krachtverhoudingen. De coördinaten worden berekend met de volgende formules \autocite{Ferger2019}:
+
+\begin{align*}
+    F(dx) &= \frac{F_3 + F_4}{\frac{L}{2}} - \frac{F_1 + F_2}{\frac{L}{2}} \\ 
+    F(dy) &= \frac{F_2 + F_3}{\frac{B}{2}} - \frac{F_1 + F_4}{\frac{B}{2}}
+\end{align*}
+
+Waarbij $F_{1\dots4}$ de krachten van de vier platen zijn, en $L$ en $B$ respectievelijk de lengte en breedte van de trampoline. De ori{\"e}ntatie van deze platen is weergegeven in Figuur~\ref{fig:Krachtplaten}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Krachtplaten.jpg}
+    \caption{Positie van de krachtplaten onder de trampoline en de X- en Y-richtingen voor positiebepaling \autocite{Ferger2019}.}
+    \label{fig:Krachtplaten}
+\end{figure}
+
+\paragraph{Berekening Vluchttijd}
+ToF wordt gemeten door de krachtmetingen te combineren met een algoritme dat landings- en afstootmomenten detecteert. Het systeem zoekt naar een krachtpiek (>5000 N) en bepaalt de contactmomenten op het punt waar 50\% van die piek wordt bereikt. Vanwege de elasticiteit van het doek wordt de landing geschat op 74 ms vóór dit punt en de afstoot op 88 ms erna (zie Figuur~\ref{fig:krachtcurve}) \autocite{Ferger2019}.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{ToF_meting.jpg}
+    \caption{Kracht-tijd curve ter illustratie van de schatting van afstoot en landing \autocite{Ferger2019}.}
+    \label{fig:krachtcurve}
+\end{figure}
+
+\subsection{Computer Vision Benaderingen}
+Het onderzoek van \textcite{Park2022} presenteert een systeem dat driedimensionale voetposities op een fitnesstrampoline bepaalt. Dit is relevant om de haalbaarheid van een camera-gebaseerd alternatief voor HDTS te evalueren.
+
+Dit systeem gebruikt een camera met fisheye-lens onder de trampoline om schaduwen van de voeten te registreren. De beelden worden omgezet naar grijswaarden en genormaliseerd. Vervolgens voorspelt een deep learning-model de coördinaten. 
+
+Figuur~\ref{fig:park_pipeline} toont de werking van dit algoritme: naast de visuele data wordt ook de voetgrootte als parameter meegenomen om de nauwkeurigheid van het Faster R-CNN netwerk te verhogen.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\linewidth]{ParkAlgoritme.jpg}
+    \caption{Schematische weergave van het detectie-algoritme. De fisheye-beelden worden omgezet naar grijswaarden en samen met de voetgrootte verwerkt door een Faster R-CNN netwerk om de XYZ-coördinaten te bepalen \autocite{Park2022}.}
+    \label{fig:park_pipeline}
+\end{figure}
+
+De resultaten van dit onderzoek tonen een gemiddelde afwijking van 11.7 mm. Dit suggereert dat deze methode, mits aangepast voor grote trampolines, voldoende nauwkeurig kan zijn voor het bepalen van de landingszones. Geïnspireerd door deze resultaten werd in de initi{\"e}le fase van dit onderzoek eveneens ge{\"e}xperimenteerd met een cameraopstelling onder de trampoline. Dit wordt verder toegelicht in Hoofdstuk~\ref{ch:methodologie}.
 
