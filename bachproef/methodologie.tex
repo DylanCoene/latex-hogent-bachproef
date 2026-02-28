@@ -1,8 +1,9 @@
+% !TeX root = CoeneDylanBP.tex
 %%=============================================================================
 %% Methodologie
 %%=============================================================================
 
-%% TODO: In dit hoofstuk geef je een korte toelichting over hoe je te werk bent
+%% In dit hoofstuk geef je een korte toelichting over hoe je te werk bent
 %% gegaan. Verdeel je onderzoek in grote fasen, en licht in elke fase toe wat
 %% de doelstelling was, welke deliverables daar uit gekomen zijn, en welke
 %% onderzoeksmethoden je daarbij toegepast hebt. Verantwoord waarom je
@@ -29,18 +30,18 @@
 \section{Overzicht en werkwijze}
 \label{sec:methodologie-overzicht}
 
-Het onderzoek volgt een iteratieve, experimenteel geori{\"e}nteerde aanpak. Gegeven de verkennende aard van dit project, waarbij een nieuw meetsysteem wordt ontwikkeld zonder bestaande standaardmethoden, is een klassieke waterval-methodologie ongeschikt. In plaats daarvan worden opeenvolgende experimentele fasen uitgevoerd, waarbij bevindingen uit elke fase het ontwerp van de volgende fase informeren.
+Het onderzoek volgt een iteratieve, experimenteel geori{\"e}nteerde aanpak. Gegeven de verkennende aard van dit project, waarbij een nieuw meetsysteem wordt ontwikkeld zonder bestaande standaardmethoden, is een klassieke waterval-methodologie ongeschikt. Bij een waterval-methode liggen alle stappen vooraf vast, terwijl dit project vraagt om flexibiliteit. In plaats daarvan worden opeenvolgende experimentele fasen uitgevoerd. De bevindingen en knelpunten uit elke fase worden direct gebruikt om het ontwerp en de strategie van de volgende fase aan te scherpen.
 
 %----------------------------------------------------------------------
 
 \section{Initi{\"e}le verkenning: diepteschatting via ondercamera}
 \label{sec:methodologie-verkenning}
 
-Voorafgaand aan de formele onderzoeksfasen werd een eerste exploratieve test uitgevoerd om de haalbaarheid van het oplossingsdomein af te toetsen. Hiervoor werd een iPhone 13 camera, uitgerust met een externe fisheye-lens, onder de trampoline geplaatst om een onderaanzicht te verkrijgen. Aangezien deze test louter exploratief van aard was, werd er in deze fase nog geen lenskalibratie uitgevoerd om de vervorming van de fisheye-lens te corrigeren.
+Voorafgaand aan de formele onderzoeksfasen werd een eerste exploratieve test uitgevoerd om de haalbaarheid van het oplossingsdomein af te toetsen. Het doel was om te kijken of de vervorming van het doek eenvoudig van onderaf gemeten kon worden. Hiervoor werd een iPhone 13 camera, uitgerust met een externe fisheye-lens, centraal onder de trampoline geplaatst om een volledig onderaanzicht te verkrijgen. Aangezien deze test louter bedoeld was om de mogelijkheden van het idee te verkennen, werd er in deze fase nog geen tijd besteed aan lenskalibratie om de optische vervorming van de fisheye-lens te corrigeren.
 
-Ondanks de fisheye-lens kon niet de volledige oppervlakte van de trampoline in beeld worden gebracht. Hoewel het grootste deel zichtbaar was, bleven bepaalde randzones buiten het bereik van de camera. Op de opgenomen beelden werd het \textit{Depth Anything v3}-model toegepast, een state-of-the-art model voor monoculaire diepteschatting. De doelstelling was om te onderzoeken of het model de vervorming van het trampolinedoek tijdens een sprong kon vastleggen als indicatie van de landingspositie.
+Ondanks de brede kijkhoek van de fisheye-lens kon de volledige oppervlakte van de trampoline niet in beeld worden gebracht. Hoewel het grootste deel van het vlak zichtbaar was, bleven bepaalde randzones en de uiterste hoeken buiten het bereik van de camera. Op de opgenomen beelden werd vervolgens het \textit{Depth Anything v3}-model toegepast. Dit is een modern en krachtig AI-model dat specifiek is ontworpen voor monoculaire diepteschatting: het schatten van afstand op basis van een enkel camerabeeld. De doelstelling was om te onderzoeken of het model de driedimensionale vervorming van het trampolinedoek tijdens een sprong accuraat kon vastleggen als indicatie voor de landingspositie.
 
-De resultaten waren echter onvoldoende. Aangezien het trampolinedoek uit dit perspectief semi-transparant is, biedt het nauwelijks textuur of visuele referentie voor een dieptemodel. Bijgevolg kon het model geen betrouwbare dieptekaart genereren. Bovendien vervormde het doek op het dieptepunt van de landing zo sterk, dat het overzicht in het beeld verloren ging. Dit maakte een betrouwbare voorspelling van de horizontale verplaatsing mateloos complex. Figuur~\ref{fig:diepteschatting-verkenning} toont een vergelijking tussen een origineel camerabeeld en de bijbehorende dieptemap. Dit leidde tot een herori{\"e}ntering naar een homografiegebaseerde methode via een schuin zijdelings aanzicht.
+De resultaten van deze verkenning waren echter onvoldoende om op voort te bouwen. Aangezien het trampolinedoek vanuit dit perspectief semi-transparant is en het licht van boven doorlaat, biedt het oppervlak nauwelijks textuur of visuele referentiepunten voor een dieptemodel. Hierdoor kon het algoritme geen betrouwbare of consistente dieptekaart genereren. Bovendien vervormde het doek op het dieptepunt van de landing zo sterk en kwam het zo dicht bij de lens, dat de camera het globaal overzicht van de trampoline verloor. Dit maakte een nauwkeurige voorspelling van de horizontale verplaatsing erg lastig. Figuur~\ref{fig:diepteschatting-verkenning} toont een duidelijke vergelijking tussen een origineel camerabeeld en de bijbehorende, onsamenhangende dieptemap. Deze bevindingen leidden tot de beslissing om de aanpak onder de trampoline te verlaten en te kiezen voor een methode op basis van homografie via een schuin zijdelings aanzicht.
 
 \begin{figure}[ht]
     \centering

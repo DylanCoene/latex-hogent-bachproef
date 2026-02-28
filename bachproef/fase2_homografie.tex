@@ -5,23 +5,25 @@
 \section{Homografietransformatie: van pixel naar meter}
 \label{sec:homografie}
 
-% TODO: Literatuurstudie over formaat van de trampoline
+% TODO: Literatuurstudie over formaat van de trampoline linken
 Nu elk videoframe vrij is van lensvervorming, worden de pixelcoördinaten $(u, v)$ uit het beeldvlak via een basistransformatie geprojecteerd naar fysieke coördinaten $(x, y)$ op het trampolinedoek, uitgedrukt in meters. Aangezien de afmetingen van een wedstrijdtrampoline gestandaardiseerd zijn, kan er gebruik worden gemaakt van een \textit{planaire homografietransformatie}.
 
-Een homografie $H$ is een $3 \times 3$ matrix die de projectieve transformatie beschrijft tussen twee vlakken: het camerabeeld en het trampolinedoek.
+Nu elk videoframe vrij is van lensvervorming, kunnen de beelden worden gebruikt voor exacte metingen. De pixelcoördinaten $(u, v)$ uit het platte beeldvlak moeten via een basistransformatie worden geprojecteerd naar fysieke coördinaten $(x, y)$ op het trampolinedoek, uitgedrukt in meters. Omdat een camera de trampoline meestal onder een hoek bekijkt, lijkt de rechthoekige mat op beeld vaak op een trapezium. Aangezien de vorm en afmetingen van een wedstrijdtrampoline gestandaardiseerd zijn, kan er gebruik worden gemaakt van een \textit{planaire homografietransformatie} om dit perspectief te corrigeren.
 
-De transformatie wordt bepaald door vier corresponderende puntenparen:
+Een homografie $H$ is een $3 \times 3$ matrix die de wiskundige relatie beschrijft tussen twee platte vlakken: het camerabeeld en het werkelijke trampolinedoek. Deze matrix dient als een brug die elke pixel in de video koppelt aan een specifieke plek op de mat.
+
+De transformatie wordt bepaald aan de hand van vier corresponderende puntenparen:
 \begin{enumerate}
     \item De vier hoekpunten van de trampolinemat worden in het videoframe (pixelcoördinaten) bepaald aan de hand van een \textit{landmark detection} model. Dit elimineert de nood aan manuele kalibratie en maakt de aanpak robuuster voor bewegende camerabeelden.
     \item De re{\"e}le afmetingen van de trampoline (bijv. 4.28\,m $\times$ 2.14\,m) worden als doelcoördinaten opgegeven. % TODO: Concrete afmetingen van de trampoline
 \end{enumerate}
 
-Met behulp van \texttt{cv2.getPerspectiveTransform} of \texttt{cv2.findHomography} wordt de matrix $H$ berekend. Vervolgens kan elke pixel $(u, v)$ op het trampolinedoek worden omgezet naar een coördinaat $(x, y)$ via:
+Met behulp van functies zoals \texttt{cv2.getPerspectiveTransform} of \texttt{cv2.findHomography} uit de OpenCV-bibliotheek wordt de matrix $H$ berekend. Zodra deze matrix bekend is, kan elke pixel $(u, v)$ die op het trampolinedoek valt, worden omgezet naar een exacte metrische coördinaat $(x, y)$ via de volgende berekening:
 
 \[
-\begin{pmatrix} x' \\ y' \\ w \end{pmatrix} = H \cdot \begin{pmatrix} u \\ v \\ 1 \end{pmatrix}, \quad (x, y) = \left(\frac{x'}{w},\, \frac{y'}{w}\right)
+    \begin{pmatrix} x' \\ y' \\ w \end{pmatrix} = H \cdot \begin{pmatrix} u \\ v \\ 1 \end{pmatrix}, \quad (x, y) = \left(\frac{x'}{w},\, \frac{y'}{w}\right)
 \]
 
-De nauwkeurigheid van de homografie wordt ge{\"e}valueerd door meetpunten op bekende posities op de mat te projecteren en te vergelijken met de gecorrigeerde re{\"e}le afstand. De verwachte maximale afwijking bedraagt enkele centimeters, afhankelijk van de cameraresolutie en de nauwkeurigheid van de handmatige hoekselectie.
+Hierbij zorgt de factor $w$ voor de schaling die nodig is om het perspectief-effect volledig te neutraliseren. De nauwkeurigheid van de homografie wordt tot slot ge{\"e}valueerd door visuele meetpunten of markeringen op bekende posities op de mat te projecteren. De berekende afstand wordt dan vergeleken met de werkelijk gemeten afstand. De verwachte maximale afwijking bedraagt slechts enkele centimeters. Deze kleine foutmarge is afhankelijk van de resolutie van de camera en hoe precies het model de hoekpunten van de mat kan bepalen.
 
 % TODO: Figuur die de homografie toont + plot van de evaluatie

@@ -7,6 +7,10 @@
 
 % Pas na deze inleidende paragraaf komt de eerste sectiehoofding.
 
+% TODO: Trampolineformaat, schrijven over hoe standaard trampo eruit ziet
+% TODO: Hawk-eye/Voetbal, andere camera-gebaseerde systemen + homografie methode hieruit als inspiratie
+% TODO: Publieke trampoline datasets?
+
 Deze literatuurstudie is opgedeeld in twee delen. In het eerste deel wordt de scoreberekening en de reglementering binnen het trampolinespringen toegelicht. Het tweede deel omvat de huidige stand van zaken op het gebied van meettechnologie{\"e}n.
 
 \section{Scoreberekening en Reglementering}
@@ -28,7 +32,7 @@ Volgens de FIG Code of Points \parencite{FTTC2024} bestaat een individuele oefen
 De berekening van de eindscore gebeurt aan de hand van de volgende formule:
 
 \[
-\text{Eindscore} = E + HD + D + ToF - P
+    \text{Eindscore} = E + HD + D + ToF - P
 \]
 
 In dit onderzoek ligt de focus specifiek op de HD en ToF componenten.
@@ -50,7 +54,7 @@ De ToF component omvat de totale tijd dat de gymnast zich in de lucht bevindt ti
 
 Deze tijd wordt geregistreerd in duizendsten van een seconde en vervolgens afgerond naar beneden op een honderdste van een seconde. Zo zou een gymnast met een gemeten vluchttijd van 16.197 seconden een score krijgen van 16.19 voor ToF \autocite{FTTC2024}:
 \[
-16.197 \text{ seconden} \rightarrow \lfloor 16.197 \rfloor_{\downarrow 0.01} = 16.19 \text{ punten}
+    16.197 \text{ seconden} \rightarrow \lfloor 16.197 \rfloor_{\downarrow 0.01} = 16.19 \text{ punten}
 \]
 
 \section{State-of-the-art Technologie{\"e}n}
@@ -67,8 +71,8 @@ Het systeem maakt gebruik van vier krachtplaten die geplaatst worden onder de po
 De HD-waarde wordt bepaald door de landingsposities te berekenen op basis van de krachtverhoudingen. De coördinaten worden berekend met de volgende formules \autocite{Ferger2019}:
 
 \begin{align*}
-    F(dx) &= \frac{F_3 + F_4}{\frac{L}{2}} - \frac{F_1 + F_2}{\frac{L}{2}} \\ 
-    F(dy) &= \frac{F_2 + F_3}{\frac{B}{2}} - \frac{F_1 + F_4}{\frac{B}{2}}
+    F(dx) & = \frac{F_3 + F_4}{\frac{L}{2}} - \frac{F_1 + F_2}{\frac{L}{2}} \\
+    F(dy) & = \frac{F_2 + F_3}{\frac{B}{2}} - \frac{F_1 + F_4}{\frac{B}{2}}
 \end{align*}
 
 Waarbij $F_{1\dots4}$ de krachten van de vier platen zijn, en $L$ en $B$ respectievelijk de lengte en breedte van de trampoline. De ori{\"e}ntatie van deze platen is weergegeven in Figuur~\ref{fig:Krachtplaten}.
@@ -93,7 +97,7 @@ ToF wordt gemeten door de krachtmetingen te combineren met een algoritme dat lan
 \subsection{Computer Vision Benaderingen}
 Het onderzoek van \textcite{Park2022} presenteert een systeem dat driedimensionale voetposities op een fitnesstrampoline bepaalt. Dit is relevant om de haalbaarheid van een camera-gebaseerd alternatief voor HDTS te evalueren.
 
-Dit systeem gebruikt een camera met fisheye-lens onder de trampoline om schaduwen van de voeten te registreren. De beelden worden omgezet naar grijswaarden en genormaliseerd. Vervolgens voorspelt een deep learning-model de coördinaten. 
+Dit systeem gebruikt een camera met fisheye-lens onder de trampoline om schaduwen van de voeten te registreren. De beelden worden omgezet naar grijswaarden en genormaliseerd. Vervolgens voorspelt een deep learning-model de coördinaten.
 
 Figuur~\ref{fig:park_pipeline} toont de werking van dit algoritme: naast de visuele data wordt ook de voetgrootte als parameter meegenomen om de nauwkeurigheid van het Faster R-CNN netwerk te verhogen.
 
