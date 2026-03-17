@@ -115,6 +115,12 @@
     "latex-workshop.latex.autoBuild.interval": 30000,
     "latex-workshop.latex.clean.subfolder.enabled": true,
     "latex-workshop.formatting.latex": "latexindent",
+    "latex-workshop.formatting.latexindent.args": [
+        "-c",
+        "%DIR%/",
+        "%TMPFILE%",
+        "-y=defaultIndent: '    '"
+    ],
     "latex-workshop.latex.magic.args": [
         "-synctex=0",
         "-interaction=nonstopmode",

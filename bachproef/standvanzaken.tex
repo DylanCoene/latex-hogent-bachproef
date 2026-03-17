@@ -1,3 +1,4 @@
+% !TEX root = CoeneDylanBP.tex
 \chapter{\IfLanguageName{dutch}{Stand van zaken}{State of the art}}%
 \label{ch:stand-van-zaken}
 
@@ -8,13 +9,12 @@
 % Pas na deze inleidende paragraaf komt de eerste sectiehoofding.
 
 % TODO: Trampolineformaat, schrijven over hoe standaard trampo eruit ziet
-% TODO: Hawk-eye/Voetbal, andere camera-gebaseerde systemen + homografie methode hieruit als inspiratie
 % TODO: Publieke trampoline datasets?
 
 Deze literatuurstudie is opgedeeld in twee delen. In het eerste deel wordt de scoreberekening en de reglementering binnen het trampolinespringen toegelicht. Het tweede deel omvat de huidige stand van zaken op het gebied van meettechnologie{\"e}n.
 
 \section{Scoreberekening en Reglementering}
-\label{subsec:scoreberekening}
+\label{sec:scoreberekening}
 
 Om het belang van HD en ToF bij de beoordeling te begrijpen, wordt eerst het algemene beoordelingsproces toegelicht zoals vastgelegd door de internationale gymnastiekfederatie.
 
@@ -40,13 +40,13 @@ In dit onderzoek ligt de focus specifiek op de HD en ToF componenten.
 \subsection{Horizontale Verplaatsing (HD)}
 De HD component geeft weer hoe vaak een gymnast tijdens zijn of haar sprongreeks afweek van het midden van de trampoline. Het trampolinebed is opgedeeld in zones. Afhankelijk van de zone waarin de voeten van de atleet landen, worden er strafpunten afgetrokken van een basisscore van 10 punten \autocite{FTTC2024}.
 
-Het midden van de trampoline geldt als ideale landingspositie zonder aftrek, terwijl elke zone die verder ligt van het midden geleidelijk hogere strafpunten oplevert. Figuur~\ref{fig:HD_zones} illustreert de hoeveelheid punten die per zone worden afgetrokken van de basisscore.
+Het midden van de trampoline geldt als ideale landingspositie zonder aftrek, terwijl elke zone die verder ligt van het midden geleidelijk hogere strafpunten oplevert. Figuur~\ref{fig:svz_HD_zones} illustreert de hoeveelheid punten die per zone worden afgetrokken van de basisscore.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\linewidth]{HD_zones.jpg}
     \caption{Indeling van zones op het trampolinebed voor het bepalen van strafpunten voor horizontale verplaatsing \autocite{FTTC2024}.}
-    \label{fig:HD_zones}
+    \label{fig:svz_HD_zones}
 \end{figure}
 
 \subsection{Vluchttijd (ToF)}
@@ -58,7 +58,7 @@ Deze tijd wordt geregistreerd in duizendsten van een seconde en vervolgens afger
 \]
 
 \section{State-of-the-art Technologie{\"e}n}
-\label{subsec:state_of_the_art}
+\label{sec:state_of_the_art}
 
 Er zijn verschillende methoden om de hierboven beschreven parameters te meten. Hieronder worden het huidige commerci{\"e}le standaardsysteem en recent relevant onderzoek naar alternatieve camera-gebaseerde methoden besproken.
 
@@ -75,23 +75,23 @@ De HD-waarde wordt bepaald door de landingsposities te berekenen op basis van de
     F(dy) & = \frac{F_2 + F_3}{\frac{B}{2}} - \frac{F_1 + F_4}{\frac{B}{2}}
 \end{align*}
 
-Waarbij $F_{1\dots4}$ de krachten van de vier platen zijn, en $L$ en $B$ respectievelijk de lengte en breedte van de trampoline. De ori{\"e}ntatie van deze platen is weergegeven in Figuur~\ref{fig:Krachtplaten}.
+Waarbij $F_{1\dots4}$ de krachten van de vier platen zijn, en $L$ en $B$ respectievelijk de lengte en breedte van de trampoline. De ori{\"e}ntatie van deze platen is weergegeven in Figuur~\ref{fig:svz_Krachtplaten}.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\linewidth]{Krachtplaten.jpg}
     \caption{Positie van de krachtplaten onder de trampoline en de X- en Y-richtingen voor positiebepaling \autocite{Ferger2019}.}
-    \label{fig:Krachtplaten}
+    \label{fig:svz_Krachtplaten}
 \end{figure}
 
 \paragraph{Berekening Vluchttijd}
-ToF wordt gemeten door de krachtmetingen te combineren met een algoritme dat landings- en afstootmomenten detecteert. Het systeem zoekt naar een krachtpiek (>5000 N) en bepaalt de contactmomenten op het punt waar 50\% van die piek wordt bereikt. Vanwege de elasticiteit van het doek wordt de landing geschat op 74 ms vóór dit punt en de afstoot op 88 ms erna (zie Figuur~\ref{fig:krachtcurve}) \autocite{Ferger2019}.
+ToF wordt gemeten door de krachtmetingen te combineren met een algoritme dat landings- en afstootmomenten detecteert. Het systeem zoekt naar een krachtpiek (>5000 N) en bepaalt de contactmomenten op het punt waar 50\% van die piek wordt bereikt. Vanwege de elasticiteit van het doek wordt de landing geschat op 74 ms vóór dit punt en de afstoot op 88 ms erna (zie Figuur~\ref{fig:svz_krachtcurve}) \autocite{Ferger2019}.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.5\textwidth]{ToF_meting.jpg}
     \caption{Kracht-tijd curve ter illustratie van de schatting van afstoot en landing \autocite{Ferger2019}.}
-    \label{fig:krachtcurve}
+    \label{fig:svz_krachtcurve}
 \end{figure}
 
 \subsection{Computer Vision Benaderingen}
@@ -99,14 +99,21 @@ Het onderzoek van \textcite{Park2022} presenteert een systeem dat driedimensiona
 
 Dit systeem gebruikt een camera met fisheye-lens onder de trampoline om schaduwen van de voeten te registreren. De beelden worden omgezet naar grijswaarden en genormaliseerd. Vervolgens voorspelt een deep learning-model de coördinaten.
 
-Figuur~\ref{fig:park_pipeline} toont de werking van dit algoritme: naast de visuele data wordt ook de voetgrootte als parameter meegenomen om de nauwkeurigheid van het Faster R-CNN netwerk te verhogen.
+Figuur~\ref{fig:svz_park_pipeline} toont de werking van dit algoritme: naast de visuele data wordt ook de voetgrootte als parameter meegenomen om de nauwkeurigheid van het Faster R-CNN netwerk te verhogen.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.6\linewidth]{ParkAlgoritme.jpg}
     \caption{Schematische weergave van het detectie-algoritme. De fisheye-beelden worden omgezet naar grijswaarden en samen met de voetgrootte verwerkt door een Faster R-CNN netwerk om de XYZ-coördinaten te bepalen \autocite{Park2022}.}
-    \label{fig:park_pipeline}
+    \label{fig:svz_park_pipeline}
 \end{figure}
 
 De resultaten van dit onderzoek tonen een gemiddelde afwijking van 11.7 mm. Dit suggereert dat deze methode, mits aangepast voor grote trampolines, voldoende nauwkeurig kan zijn voor het bepalen van de landingszones. Geïnspireerd door deze resultaten werd in de initi{\"e}le fase van dit onderzoek eveneens ge{\"e}xperimenteerd met een cameraopstelling onder de trampoline. Dit wordt verder toegelicht in Hoofdstuk~\ref{ch:methodologie}.
 
+% Beschrijving van hoe hawk-eye een inspiratie was voor homografie-gebaseerde positiebepaling.
+\subsection{Positiebepaling met Homografie}
+\label{subsec:hawk_eye}
+
+Naast de methode die gebruikmaakt van het registreren van schaduwen, is het ook mogelijk om camerabeelden vanaf een vast standpunt in de ruimte te kalibreren ten opzichte van een gegeven veld. Het bepalen van een positie met een camera door middel van een homografie-transformatie is sterk gebaseerd op het bekende Hawk-Eye systeem die wordt gebruikt in professionele tenniscompetities.
+
+Recent onderzoek, zoals beschreven door \textcite{Manikanta2025}, illustreert de werking van een geautomatiseerd systeem voor tennisanalyse. In hun werk worden deep learning-modellen (zoals YOLOv5, YOLOv8 en ResNet50) geïntegreerd om spelers, de bal en de keypoints van het veld te detecteren. Door middel van de gedetecteerde keypoints kan een homografie-matrix worden opgesteld. Deze matrix maakt het mogelijk om de cameraprojectie te transformeren naar een gestandaardiseerd bovenaanzicht, wat precieze positiebepaling van acties of atleten mogelijk maakt, onafhankelijk van het perspectief van de camera. Een gelijkaardige toepassing kan ingezet worden in het trampolinespringen om de positie van de gymnast op het trampolinebed te projecteren en zo de HD-score objectief te meten.
