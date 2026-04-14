@@ -3,6 +3,10 @@
 *~
 *.sav
 
+## Proof of concept files
+poc_bp/
+poc_bp/models/
+
 ## R
 .RData
 .Rhistory
