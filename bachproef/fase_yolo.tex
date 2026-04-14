@@ -1,0 +1,22 @@
+% !TEX root = CoeneDylanBP.tex
+
+\section{Trampolinedetectie en Hoekpuntlocalisatie}
+\label{sec:trampolinedetectie}
+
+Voordat enige positiemeting mogelijk is, moeten de vier hoekpunten van het trampolinebed per frame gelokaliseerd worden. Deze hoekpunten vormen de invoer voor de homografietransformatie en bepalen daarmee de nauwkeurigheid van alle volgende stappen.
+
+\subsection{Hoekpuntdetectie via YOLO-Pose}
+\label{subsec:hoekpuntdetectie}
+
+Voor de automatische localisatie van de hoekpunten werd een YOLO11n-pose model ingezet \autocite{Jocher_Ultralytics_YOLO_2023}. Dit model is toegelicht in Sectie~\ref{subsec:yolo} van de literatuurstudie. De \textit{pose}-variant van YOLO11 laat toe om naast een bounding box ook een vaste set keypoints te voorspellen. In dit geval werd het model geconfigureerd met vier keypoints die overeenkomen met de vier hoeken van het trampolinebed: linksboven, linksonder, rechtsboven en rechtsonder.
+
+Het model werd getraind op een dataset van enkele honderden handmatig geannoteerde trampolineafbeeldingen, geselecteerd uit de dataset beschreven in Sectie~\ref{sec:dataset}. Dankzij de uiteenlopende camerahoeken en -afstanden in het wedstrijdmateriaal was het model na training in staat om de hoekpunten te detecteren ondanks de bewegende camera en wisselende perspectieven.
+
+De nauwkeurigheid van het model was echter niet perfect. Bij frames waarbij het trampolinedoek sterk doorzakt — wat typisch het geval is op het moment van landing — vertoonden de gedetecteerde hoekpunten soms een zichtbare verschuiving ten opzichte van de werkelijke hoekposities. Omdat de volledige homografietransformatie op deze vier punten steunt, vertaalt elke fout in de hoekpuntdetectie zich rechtstreeks in een fout in de berekende landingspositie. Dit vormt de belangrijkste nauwkeurigheidsbeperking van de automatische aanpak.
+
+\subsection{Alternatief: Manuele Annotatie}
+\label{subsec:manuele-annotatie}
+
+Als alternatief voor de automatische detectie werd een optie voorzien om de vier hoekpunten handmatig aan te duiden in het eerste frame van een videosegment. Dit sluit aan bij een scenario waarbij de cameraopstelling voor een bepaalde opname vast blijft en de hoekpunten slechts eenmalig bepaald hoeven te worden.
+
+Manuele annotatie elimineert de detectiefout van het model volledig, waardoor de homografiematrix een stuk nauwkeuriger wordt. In de experimenten leidde dit tot een duidelijk betere landingspositiebepaling in vergelijking met de volledig geautomatiseerde aanpak. Het nadeel is uiteraard de schaalbaarheid: bij grote hoeveelheden video, of wanneer de camera doorheen de opname beweegt, is handmatig labelen niet praktisch haalbaar. Voor dit onderzoek fungeerde manuele annotatie als een bovengrens voor de haalbare nauwkeurigheid van de homografie.

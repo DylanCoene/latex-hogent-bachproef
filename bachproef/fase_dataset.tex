@@ -1,0 +1,19 @@
+% !TEX root = CoeneDylanBP.tex
+%%=============================================================================
+%% Dataset en Dataverzameling
+%%=============================================================================
+
+\section{Dataset en Dataverzameling}
+\label{sec:dataset}
+
+Omdat de initiële opzet met een eigen cameraopstelling werd verlaten, werd overgeschakeld naar een aanpak op basis van bestaande wedstrijdbeelden. De dataset van \textcite{Lin2025}, die videomateriaal van competitieve trampolinesprongen bevat, werd gebruikt als primaire databron voor het trainen en evalueren van de modellen in de pipeline.
+
+Deze dataset bestaat uit beelden van de Olympische Spelen en andere internationale wedstrijden, waarbij de camera niet volledig gefixeerd was maar meebewoog met de actie, vergelijkbaar met hoe een smartphone-applicatie in de praktijk zou worden ingezet.
+
+Een direct gevolg van het werken met pre-opgenomen beelden is dat er geen controle bestond over de camerahoeken, instellingen of de positie ten opzichte van de trampoline.
+
+Uit de dataset werden gelabelde afbeeldingen geselecteerd voor twee afzonderlijke trainingsdoeleinden:
+\begin{itemize}
+    \item Het trainen van het hoekpuntdetectiemodel (Sectie~\ref{sec:trampolinedetectie}): afbeeldingen van trampolines waarbij de vier hoeken van het bed handmatig werden geannoteerd.
+    \item Het trainen van de landingsclassifier (Sectie~\ref{subsec:landingsmoment-classifier}): uitgeknipte beelden van het trampolinebed, voorzien van het label \textit{Landed} of \textit{Not Landed}, afhankelijk van of een springer in contact was met het doek.
+\end{itemize}

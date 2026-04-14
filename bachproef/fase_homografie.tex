@@ -1,0 +1,24 @@
+% !TEX root = CoeneDylanBP.tex
+
+\section{Homografietransformatie: van pixel naar meter}
+\label{sec:homografie}
+
+De pixelco{\"o}rdinaten $(u, v)$ uit het beeldvlak worden via een basistransformatie geprojecteerd naar fysieke co{\"o}rdinaten $(x, y)$ op het trampolinedoek, uitgedrukt in meters. Omdat een camera de trampoline meestal onder een hoek bekijkt, lijkt de rechthoekige mat op beeld vaak op een trapezium. Aangezien de vorm en afmetingen van een wedstrijdtrampoline gestandaardiseerd zijn (zie Sectie~\ref{subsec:trampolinetoestel}), kan er gebruik worden gemaakt van een \textit{planaire homografietransformatie} om dit perspectief te corrigeren.
+
+Een homografie $H$ is een $3 \times 3$ matrix die de wiskundige relatie beschrijft tussen twee platte vlakken: het camerabeeld en het werkelijke trampolinedoek. Deze matrix dient als een brug die elke pixel in de video koppelt aan een specifieke plek op de mat.
+
+De transformatie wordt bepaald aan de hand van vier corresponderende puntenparen:
+\begin{enumerate}
+    \item De vier hoekpunten van de trampolinemat worden in het videoframe (pixelco{\"o}rdinaten) bepaald via de methode beschreven in Sectie~\ref{sec:trampolinedetectie}.
+    \item De re{\"e}le afmetingen van de trampoline (4,28\,m $\times$ 2,14\,m, zie Sectie~\ref{subsec:trampolinetoestel}) worden als doelco{\"o}rdinaten opgegeven.
+\end{enumerate}
+
+Met behulp van functies zoals \texttt{cv2.getPerspectiveTransform} of \texttt{cv2.findHomography} uit de OpenCV-bibliotheek wordt de matrix $H$ berekend. Zodra deze matrix bekend is, kan elke pixel $(u, v)$ die op het trampolinedoek valt, worden omgezet naar een exacte metrische coördinaat $(x, y)$ via de volgende berekening:
+
+\[
+    \begin{pmatrix} x' \\ y' \\ w \end{pmatrix} = H \cdot \begin{pmatrix} u \\ v \\ 1 \end{pmatrix}, \quad (x, y) = \left(\frac{x'}{w},\, \frac{y'}{w}\right)
+\]
+
+Hierbij zorgt de factor $w$ voor de schaling die nodig is om het perspectief-effect volledig te neutraliseren. De nauwkeurigheid van de homografie wordt tot slot ge{\"e}valueerd door visuele meetpunten of markeringen op bekende posities op de mat te projecteren. De berekende afstand wordt dan vergeleken met de werkelijk gemeten afstand. De verwachte maximale afwijking bedraagt slechts enkele centimeters. Deze kleine foutmarge is afhankelijk van de resolutie van de camera en hoe precies het model de hoekpunten van de mat kan bepalen.
+
+% TODO: Figuur die de homografie toont + plot van de evaluatie

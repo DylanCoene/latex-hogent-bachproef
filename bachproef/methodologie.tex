@@ -37,7 +37,7 @@ Het onderzoek volgt een iteratieve, experimenteel geori{\"e}nteerde aanpak. Gege
 \section{Initi{\"e}le verkenning: diepteschatting via ondercamera}
 \label{sec:methodologie-verkenning}
 
-Voorafgaand aan de formele onderzoeksfasen werd een eerste exploratieve test uitgevoerd om de haalbaarheid van het oplossingsdomein af te toetsen. Het doel was om te kijken of de vervorming van het doek eenvoudig van onderaf gemeten kon worden. Hiervoor werd een iPhone 13 camera, uitgerust met een externe fisheye-lens, centraal onder de trampoline geplaatst om een volledig onderaanzicht te verkrijgen. Aangezien deze test louter bedoeld was om de mogelijkheden van het idee te verkennen, werd er in deze fase nog geen tijd besteed aan lenskalibratie om de optische vervorming van de fisheye-lens te corrigeren.
+Voorafgaand aan de formele onderzoeksfasen werd een eerste exploratieve test uitgevoerd om de haalbaarheid van het oplossingsdomein af te toetsen. Het doel was om te kijken of de vervorming van het doek eenvoudig van onderaf gemeten kon worden. Hiervoor werd een iPhone 13 camera, uitgerust met een externe fisheye-lens, centraal onder de trampoline geplaatst om een volledig onderaanzicht te verkrijgen. Aangezien deze test louter bedoeld was om de mogelijkheden van het idee te verkennen, werd de opzet zo eenvoudig mogelijk gehouden.
 
 Ondanks de brede kijkhoek van de fisheye-lens kon de volledige oppervlakte van de trampoline niet in beeld worden gebracht. Hoewel het grootste deel van het vlak zichtbaar was, bleven bepaalde randzones en de uiterste hoeken buiten het bereik van de camera. Op de opgenomen beelden werd vervolgens het \textit{Depth Anything v3}-model toegepast. Dit is een modern en krachtig AI-model dat specifiek is ontworpen voor monoculaire diepteschatting: het schatten van afstand op basis van een enkel camerabeeld. De doelstelling was om te onderzoeken of het model de driedimensionale vervorming van het trampolinedoek tijdens een sprong accuraat kon vastleggen als indicatie voor de landingspositie.
 
@@ -52,8 +52,9 @@ De resultaten van deze verkenning waren echter onvoldoende om op voort te bouwen
 
 %----------------------------------------------------------------------
 
-\input{fase1_kalibratie}
-\input{fase2_homografie}
-\input{fase3_yolo}
-\input{fase4_tof}
-\input{fase5_pose}
+\input{fase_dataset}
+\input{fase_yolo}
+\input{fase_homografie}
+\input{fase_landingsmoment}
+\input{fase_pose}
+\input{fase_tof}

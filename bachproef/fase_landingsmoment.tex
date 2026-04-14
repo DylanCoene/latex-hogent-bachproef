@@ -1,0 +1,27 @@
+% !TEX root = CoeneDylanBP.tex
+%%=============================================================================
+%% Landingsmomentdetectie
+%%=============================================================================
+
+\section{Landingsmomentdetectie}
+\label{sec:landingsmoment}
+
+Om de landingspositie te kunnen bepalen, moet eerst het exacte frame worden geïdentificeerd waarop de springer in aanraking komt het doek. Deze stap is cruciaal, gezien zowel een te vroeg als een te laat gedetecteerd landingsmoment leidt tot een foutieve positieschatting.
+
+\subsection{Initiële aanpak: Snelheidsgebaseerde Detectie via Pose Estimation}
+\label{subsec:landingsmoment-pose}
+
+De eerste strategie om het landingsmoment te bepalen was gebaseerd op de verticale snelheid van de springer doorheen de sprong. Via een Pose Estimation model werd het zwaartepunt van de springer per frame bepaald. Wanneer de verticale component van dat zwaartepunt abrupt afnam, een teken dat de opwaartse beweging stopt, zou dat het moment van doekcontact aangeven.
+
+In de praktijk bleek deze aanpak echter onbetrouwbaar. YOLO Pose Estimation modellen genereren keypoint-predicties op basis van individuele frames, zonder gebruik te maken van temporele informatie. Bij de snelle bewegingen die kenmerkend zijn voor trampolinespringen veroorzaakt de hoge snelheid van de springer op het moment vlak voor landing een sterke bewegingsonscherpte (\textit{motion blur}) in het beeld. Precies in deze kritieke frames vielen de keypoint-predities frequent weg of werden ze onnauwkeurig, waardoor het snelheidsignaal te onbetrouwbaar was om als detectiemechanisme te dienen.
+
+\subsection{Gekozen aanpak: Binaire Classifier}
+\label{subsec:landingsmoment-classifier}
+
+Omdat het snelheidsgebaseerde systeem te sterk afhankelijk was van betrouwbare keypoints, werd overgestapt op een aanpak die het landingsmoment direct op beeldniveau detecteert. Hiervoor werd een YOLO11n classificatiemodel \autocite{Jocher_Ultralytics_YOLO_2023} getraind als binaire classifier met twee klassen: \textit{Landed} en \textit{Not Landed}.
+
+Als invoer ontvangt de classifier per frame een uitsnede van het trampolinebed, bepaald als bijproduct van de hoekpuntendetectie uit Sectie~\ref{sec:trampolinedetectie}. Door de invoer te beperken tot de trampoline-regio wordt de achtergrond en de omgeving van het beeld buiten beschouwing gelaten, wat de focus van het model op de relevante informatie vergroot. Het model leert zo om direct uit het visuele patroon van het doek, de aanwezigheid van een springer, de vervorming van het doek en de schaduwpatronen te bepalen of er contact is.
+
+Het eerste opeenvolgende frame waarop de classifier de klasse \textit{Landed} toekent, wordt gebruikt als het landingsframe. Dit frame dient vervolgens als invoer voor de landingspositiebepaling (Sectie~\ref{sec:landingspositie}) en als ankerpunt voor de ToF-berekening (Sectie~\ref{sec:tof}).
+
+Ondanks de relatief beperkte omvang van de trainingsset presteerde het model opvallend goed. De eenvoud van de classificatietaak, het onderscheid tussen een leeg doek en een doek met een springer, maakt het probleem voldoende afgebakend om met weinig data goed te generaliseren.
