@@ -8,8 +8,6 @@
 
 % Pas na deze inleidende paragraaf komt de eerste sectiehoofding.
 
-% TODO : Trampolineformaat, schrijven over hoe standaard trampo eruit ziet
-
 Deze literatuurstudie is opgedeeld in twee delen. In het eerste deel wordt de scoreberekening en de reglementering binnen het trampolinespringen toegelicht. Het tweede deel omvat de huidige stand van zaken op het gebied van meettechnologie{\"e}n.
 
 \section{Scoreberekening en Reglementering}
@@ -35,6 +33,14 @@ De berekening van de eindscore gebeurt aan de hand van de volgende formule:
 \]
 
 In dit onderzoek ligt de focus specifiek op de HD en ToF componenten.
+
+\subsection{Het trampolinetoestel}
+\label{subsec:trampolinetoestel}
+
+Om de HD- en ToF-metingen correct te kunnen interpreteren, is het noodzakelijk om de fysieke eigenschappen van het toestel te kennen. De FIG Code of Points \autocite{FTTC2024} legt de afmetingen en technische specificaties van het wedstrijdtoestel vast. Het volledige trampolinebed meet 5,05\,m in lengte en 3,05\,m in breedte. Het effectief bespannen gedeelte, waarop de gymnast landt, bedraagt 4,28\,m $\times$ 2,14\,m. De hoogte van het toestel bedraagt minimaal 1,15\,m boven de vloer.
+
+Doordat deze afmetingen internationaal gestandaardiseerd zijn, is het mogelijk om in een camera-gebaseerd meetsysteem de pixelco{\"o}rdinaten van de hoekpunten van het bed te koppelen aan vaste metrische coördinaten. Dit vormt de basis voor de homografietransformatie die in dit onderzoek wordt toegepast.
+
 
 \subsection{Horizontale Verplaatsing (HD)}
 De HD component geeft weer hoe vaak een gymnast tijdens zijn of haar sprongreeks afweek van het midden van de trampoline. Het trampolinebed is opgedeeld in zones. Afhankelijk van de zone waarin de voeten van de atleet landen, worden er strafpunten afgetrokken van een basisscore van 10 punten \autocite{FTTC2024}.
