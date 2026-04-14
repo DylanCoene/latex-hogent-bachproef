@@ -8,12 +8,69 @@
 
 % TODO: Trek een duidelijke conclusie, in de vorm van een antwoord op de
 % onderzoeksvra(a)g(en). Wat was jouw bijdrage aan het onderzoeksdomein en
-% hoe biedt dit meerwaarde aan het vakgebied/doelgroep? 
+% hoe biedt dit meerwaarde aan het vakgebied/doelgroep?
 % Reflecteer kritisch over het resultaat. In Engelse teksten wordt deze sectie
 % ``Discussion'' genoemd. Had je deze uitkomst verwacht? Zijn er zaken die nog
 % niet duidelijk zijn?
-% Heeft het onderzoek geleid tot nieuwe vragen die uitnodigen tot verder 
-%onderzoek?
+% Heeft het onderzoek geleid tot nieuwe vragen die uitnodigen tot verder onderzoek?
+
+%% LIMITATIES
+%
+% - FPS-begrenzing van ToF-nauwkeurigheid: bij 25 fps bedraagt de onzekerheid
+%   per landing ~40 ms. Over een reeks van 10 sprongen (20 contactmomenten)
+%   kan de cumulatieve fout oplopen tot ~800 ms.
+%
+% - Hoekpuntdetectie onnauwkeurig bij doekvervorming: het YOLO-pose model gleed
+%   soms weg bij sterk doorzakkend doek (typisch op het landingsmoment), wat leidt
+%   tot een foutieve homografiematrix en dus foutieve landingsposities.
+%
+% - Diepte-as probleem: de landingspositie langs de diepte-as (voor-achter vanuit
+%   het camerastandpunt) is aanzienlijk minder nauwkeurig dan de links-rechts positie.
+%   De homografie is gevoelig voor kleine fouten in de hoekpunten, en dit effect
+%   is het sterkst langs de as die het verst van de camera ligt.
+%
+% - Spotters interfereren met persoondetectie: begeleiders die dicht bij de
+%   trampoline staan werden soms verkeerdelijk als de springer geïdentificeerd.
+%
+% - Eerste landingsframe: door het inzakken van het doek bij landing staat de
+%   springer op het eerste gedetecteerde frame soms al iets lager dan de werkelijke
+%   landingspositie, wat de HD-schatting beïnvloedt.
+%
+% - Beperkte trainingsdata: beide fine-tuned modellen (hoekpuntdetectie en
+%   landingsclassifier) zijn getraind op een relatief kleine dataset. Dit beperkt
+%   de generaliseerbaarheid naar andere camera-opstellingen of trampolineomgevingen.
+%
+% - Geen temporele informatie: alle modellen (YOLO, ViTPose, SAM-2) verwerken
+%   frames onafhankelijk. Temporele context zou de robuustheid kunnen verbeteren.
+
+%% AANBEVELINGEN VOOR VERDER ONDERZOEK
+%
+% - Hogere framerate: een camera met 60 fps of meer verkleint de ToF-onzekerheid
+%   tot ~17 ms per landing, wat de nauwkeurigheid sterk verbetert.
+%
+% - Tweede camera vanuit tegenovergesteld perspectief: door links-rechts positie
+%   (vanuit camera 1) te combineren met voor-achter positie (vanuit camera 2)
+%   kan een volledige 2D landingspositie nauwkeurig worden bepaald. Vereist wel
+%   synchronisatie tussen de camera's.
+%
+% - Bovenaanzichtcamera als alternatief: een camera recht boven de trampoline
+%   maakt de landingspositie direct zichtbaar en elimineert het diepte-asProbleem.
+%   Praktisch moeilijk in een trainingsomgeving maar ideaal voor vaste installaties.
+%
+% - Grotere en meer diverse dataset: meer gelabelde trampolinebeelden vanuit
+%   verschillende hoeken, omgevingen en belichting zou de modelgeneralisatie
+%   verbeteren. Data-augmentatie (rotatie, kleurjitter, blur) kan dit deels opvangen.
+%
+% - Temporele modellen voor positiebepaling: een model dat meerdere opeenvolgende
+%   frames tegelijk verwerkt (bv. videogebaseerde pose estimation of tracking)
+%   zou robuuster zijn bij motion blur en kortstondige occlussies.
+%
+% - Camerakalibratie in toekomstige iteraties: bij gebruik van een vaste camera-
+%   opstelling (bv. in een trainingshal) is kalibratie wel mogelijk, wat de
+%   nauwkeurigheid van de homografie verder kan verbeteren.
+%
+% - Verfijning van het hoekpuntdetectiemodel: een grotere dataset, dieper netwerk
+%   of geavanceerdere augmentatietechnieken zouden de stabiliteit van de
+%   hoekpuntdetectie bij doekvervorming kunnen verbeteren.
 
 \lipsum[76-80]
-
