@@ -15,7 +15,7 @@ uitgewerkt (met medestudent Sam De Gendt als mede-auteur).
 \label{sec:inleiding}
 
 % Context schetsen
-Trampolinespringen is een technische en complexe sport, waar atleten beoordeeld worden op basis van verschillende componenten zoals moeilijkheidsgraad, uitvoering, horizontale verplaatsing (horizontal displacement, HD) en vluchttijd (time of flight, ToF) \autocite{FTTC2024}. 
+Trampolinespringen is een technische en complexe sport, waar atleten beoordeeld worden op basis van verschillende componenten zoals moeilijkheidsgraad, uitvoering, horizontale verplaatsing (horizontal displacement, HD) en vluchttijd (time of flight, ToF) \autocite{FTTC2024}.
 
 Het meten van HD en ToF in offici{\"e}le competities gebeurt door middel van het \emph{HDTS Trampoline Measurement Device}. Dit systeem, verder afgekort als HDTS, gebruikt vier krachtplaten die geïnstalleerd zijn onder de poten van de trampoline. Het systeem berekent zowel de HD als ToF aan de hand van krachtverhoudingen en timing gemeten door de vier platen \autocite{Ferger2019}.
 
@@ -25,7 +25,7 @@ Het probleem met het huidige HDTS-systeem is de kostprijs, die ligt tussen de \e
 Turnclubs met beperkte budgetten kunnen zich hierdoor geen HDTS-systeem veroorloven. Dit cre{\"e}ert een ongelijkheid, aangezien atleten in deze clubs geen toegang hebben tot automatische metingen van HD en ToF tijdens hun trainingen. Zij zijn genoodzaakt om hun prestaties te analyseren via tijdsintensieve, manuele video-analyses, wat ineffici{\"e}nt is.
 
 % Hoofdvraag
-Dit onderzoek richt zich daarom op de volgende hoofdvraag: 
+Dit onderzoek richt zich daarom op de volgende hoofdvraag:
 \textit{Hoe kan een goedkoop computer vision-systeem worden ontwikkeld dat horizontale verplaatsing en vluchttijd bij trampolinespringen accuraat kan meten, als betaalbaar alternatief voor het HDTS-meetsysteem?}
 
 % Deelvragen
@@ -79,7 +79,7 @@ Volgens de FIG Code of Points \parencite{FTTC2024} bestaat een individuele oefen
 De berekening van de eindscore gebeurt aan de hand van de volgende formule:
 
 \[
-\text{Eindscore} = E + HD + D + ToF - P
+    \text{Eindscore} = E + HD + D + ToF - P
 \]
 
 In dit onderzoek ligt de focus specifiek op de HD en ToF componenten.
@@ -101,7 +101,7 @@ De ToF component omvat de totale tijd dat de gymnast zich in de lucht bevindt ti
 
 Deze tijd wordt geregistreerd in duizendsten van een seconde en vervolgens afgerond naar beneden op een honderdste van een seconde. Zo zou een gymnast met een gemeten vluchttijd van 16.197 seconden een score krijgen van 16.19 voor ToF \autocite{FTTC2024}:
 \[
-16.197 \text{ seconden} \rightarrow \lfloor 16.197 \rfloor_{\downarrow 0.01} = 16.19 \text{ punten}
+    16.197 \text{ seconden} \rightarrow \lfloor 16.197 \rfloor_{\downarrow 0.01} = 16.19 \text{ punten}
 \]
 
 \subsection{State-of-the-art Technologie{\"e}n}
@@ -118,8 +118,8 @@ Het systeem maakt gebruik van vier krachtplaten die geplaatst worden onder de po
 De HD-waarde wordt bepaald door de landingsposities te berekenen op basis van de krachtverhoudingen. De coördinaten worden berekend met de volgende formules \autocite{Ferger2019}:
 
 \begin{align*}
-    F(dx) &= \frac{F_3 + F_4}{\frac{L}{2}} - \frac{F_1 + F_2}{\frac{L}{2}} \\ 
-    F(dy) &= \frac{F_2 + F_3}{\frac{B}{2}} - \frac{F_1 + F_4}{\frac{B}{2}}
+    F(dx) & = \frac{F_3 + F_4}{\frac{L}{2}} - \frac{F_1 + F_2}{\frac{L}{2}} \\
+    F(dy) & = \frac{F_2 + F_3}{\frac{B}{2}} - \frac{F_1 + F_4}{\frac{B}{2}}
 \end{align*}
 
 Waarbij $F_{1\dots4}$ de krachten van de vier platen zijn, en $L$ en $B$ respectievelijk de lengte en breedte van de trampoline. De ori{\"e}ntatie van deze platen is weergegeven in Figuur~\ref{fig:Krachtplaten}.
@@ -144,7 +144,7 @@ ToF wordt gemeten door de krachtmetingen te combineren met een algoritme dat lan
 \subsubsection{Computer Vision Benaderingen}
 Het onderzoek van \textcite{Park2022} presenteert een systeem dat driedimensionale voetposities op een fitnesstrampoline bepaalt. Dit is relevant om de haalbaarheid van een camera-gebaseerd alternatief voor HDTS te evalueren.
 
-Dit systeem gebruikt een camera met fisheye-lens onder de trampoline om schaduwen van de voeten te registreren. De beelden worden omgezet naar grijswaarden en genormaliseerd. Vervolgens voorspelt een deep learning-model de coördinaten. 
+Dit systeem gebruikt een camera met fisheye-lens onder de trampoline om schaduwen van de voeten te registreren. De beelden worden omgezet naar grijswaarden en genormaliseerd. Vervolgens voorspelt een deep learning-model de coördinaten.
 
 Figuur~\ref{fig:park_pipeline} toont de werking van dit algoritme: naast de visuele data wordt ook de voetgrootte als parameter meegenomen om de nauwkeurigheid van het Faster R-CNN netwerk te verhogen.
 
@@ -165,8 +165,6 @@ De resultaten van dit onderzoek tonen een gemiddelde afwijking van 11.7 mm. Dit 
 
 \section{Methodologie}
 \label{sec:methodologie}
-
-% TODO: Methodologie feedback
 
 Om de risico's te beperken en flexibel in te spelen op nieuwe inzichten, wordt een Agile-werkwijze gehanteerd. In tegenstelling tot een watervalmodel, lopen literatuurstudie, dataverzameling en ontwikkeling gedeeltelijk parallel en beïnvloeden ze elkaar continu. Het onderzoek is opgedeeld in een voorbereidende fase en een iteratieve uitvoeringsfase.
 
@@ -225,10 +223,10 @@ Het finale model wordt gevalideerd op een aparte testset die gaandeweg is sameng
 % bronvermelding (commando \autocite).
 %
 % \begin{figure*}
-    %   \centering
-    %   \includegraphics[width=\textwidth]{example-image-16x9}
-    %   \caption{\label{fig:gantt}Gantt diagram met de verschillende fasen en milestones van het onderzoek.}
-    % \end{figure*}
+%   \centering
+%   \includegraphics[width=\textwidth]{example-image-16x9}
+%   \caption{\label{fig:gantt}Gantt diagram met de verschillende fasen en milestones van het onderzoek.}
+% \end{figure*}
 
 \section{Verwacht resultaat, conclusie}
 \label{sec:verwacht_resultaat_conclusie}
