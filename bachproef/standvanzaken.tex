@@ -148,20 +148,18 @@ Voor dit onderzoek was de initiële aanpak om het middelpunt tussen de twee enke
 
 Als alternatief voor keypointdetectie wordt in dit onderzoek gebruikgemaakt van pixel-niveau segmentatie. In plaats van een bounding box rondom de gymnast te berekenen, produceert een segmentatiemodel een binair masker dat exact aangeeft welke pixels tot het object behoren.
 
-Segment Anything Model 2 (\textit{SAM-2}) \autocite{Ravi2024} is een generalistisch segmentatiemodel ontwikkeld door Meta, ontworpen voor zowel statische beelden als videosequenties. Een kenmerkend aspect van SAM-2 is de \textit{promptable} aanpak: het model accepteert een eenvoudige invoer, zoals een bounding box of een klikpunt, en genereert op basis daarvan een nauwkeurig segmentatiemasker zonder domeinspecifieke fine-tuning.
+Segment Anything Model 2 (\textit{SAM-2}) \autocite{Ravi2024} is een algemeen segmentatiemodel ontwikkeld door Meta, ontworpen voor zowel statische beelden als videosequenties. Wat SAM-2 kenmerkt is de prompt-gestuurde aanpak. Het model accepteert een eenvoudige invoer, zoals een bounding box of een pixelpunt, en genereert op basis daarvan een nauwkeurig segmentatiemasker zonder domeinspecifieke fine-tuning.
 
-Dit biedt een belangrijk voordeel ten opzichte van pose estimation in de context van trampolinespringen. Doordat de laagste pixel van het segmentatiemasker direct wordt geëxtraheerd als voetcontactpunt, is er geen afhankelijkheid van expliciete keypointpredicties. Dit maakt de aanpak robuuster voor situaties met motion blur. In de voorgestelde pipeline levert de persoondetectie via YOLO11n een bounding box die als prompt aan SAM-2-tiny wordt meegegeven. Het laagste punt van het resulterende masker dient vervolgens als landingspixel voor de homografietransformatie.
-
-%----------------------------------------------------------------------
+Dit biedt een belangrijk voordeel ten opzichte van pose estimation in de context van trampolinespringen. Doordat de laagste pixel van het segmentatiemasker direct wordt geëxtraheerd als voetcontactpunt, is er geen afhankelijkheid van expliciete keypointvoorspellingen. Dit maakt de aanpak robuuster voor situaties met veel motion blur. In de voorgestelde pipeline levert de persoondetectie via YOLO11n een bounding box die als prompt aan SAM-2-tiny wordt meegegeven. Het laagste punt van het resulterende masker dient vervolgens als landingspixel voor de homografietransformatie.
 
 \section{Datasets}
 \label{sec:datasets}
 
-Het trainen van domeinspecifieke computervisiemodellen vereist data die representatief is voor de doelomgeving. Voor eerder niche sporten zoals trampolinespringen zijn dergelijke datasets schaars, wat de ontwikkeling van geautomatiseerde meetsystemen moeilijker maakt.
+Het trainen van domeinspecifieke computervisiemodellen vereist data die representatief is voor de omgeving waarin ze zullen worden gebruikt. Voor eerder niche sporten zoals trampolinespringen zijn dergelijke datasets schaars, wat de ontwikkeling van geautomatiseerde meetsystemen een stuk moeilijker maakt.
 
 \subsection{Trampolinedataset}
 \label{subsec:dataset-lin}
 
-\textcite{Lin2025} stellen een dataset voor, specifiek ontworpen voor de beoordeling van actiekwaliteit in trampolinegymnastiek. De dataset bevat video-opnames van competitieve trampolinesprongen. De dataset is gepubliceerd in het kader van onderzoek naar een causaal cross-modaal framework voor langetermijn beoordelingstaken. De dataset bevat data van vier competities: Tokyo 2020, Paris 2024, Hangzhou 2022 en Buenos Aires 2018.
+\textcite{Lin2025} stellen een dataset voor, specifiek ontworpen voor de beoordeling van actiekwaliteit in trampolinegymnastiek. De dataset bevat 206 video-opnames met finale HD- en ToF-score annotaties van competitieve trampolinesprongen. De dataset is gepubliceerd in het kader van onderzoek naar een causaal cross-modal framework voor langetermijn beoordelingstaken. De dataset bevat data van vier competities: Tokyo 2020, Paris 2024, Hangzhou 2022 en Buenos Aires 2018.
 
-In dit onderzoek wordt deze dataset gebruikt als trainingsdata voor twee modellen uit de pipeline: het fine-tunen van het hoekpuntdetectiemodel dat de vier hoeken van het trampolinebed lokaliseert, en het trainen van de landingsclassifier die per frame bepaalt of de gymnast al dan niet in contact is met het doek.
+In dit onderzoek wordt deze dataset gebruikt als trainingsdata voor twee modellen uit de pipeline: het fine-tunen van het hoekpuntdetectiemodel dat de vier hoeken van het trampolinebed lokaliseert, en het trainen van de landingsclassifier die per frame bepaalt of de gymnast al dan niet in contact is met het doek. Daarnaast wordt de dataset gebruikt als testset voor het evalueren van de nauwkeurigheid van het volledige systeem, door de gemeten HD- en ToF-waarden te vergelijken met de echte scores.
