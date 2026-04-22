@@ -34,7 +34,7 @@ Het onderzoek volgt een iteratieve, experimenteel geori{\"e}nteerde aanpak. Gege
 
 %----------------------------------------------------------------------
 
-\section{Initi{\"e}le verkenning: diepteschatting via ondercamera}
+\section{Initi{\"e}le verkenning: diepteschatting via onderaanzicht}
 \label{sec:methodologie-verkenning}
 
 Voorafgaand aan de formele onderzoeksfasen werd een eerste exploratieve test uitgevoerd om de haalbaarheid van het oplossingsdomein af te toetsen. Het doel was om te kijken of de vervorming van het doek eenvoudig van onderaf gemeten kon worden. Hiervoor werd een iPhone 13 camera, uitgerust met een externe fisheye-lens, centraal onder de trampoline geplaatst om een volledig onderaanzicht te verkrijgen. Aangezien deze test louter bedoeld was om de mogelijkheden van het idee te verkennen, werd de opzet zo eenvoudig mogelijk gehouden.
@@ -52,9 +52,4 @@ De resultaten van deze verkenning waren echter onvoldoende om op voort te bouwen
 
 %----------------------------------------------------------------------
 
-\input{fase_dataset}
-\input{fase_yolo}
-\input{fase_homografie}
-\input{fase_landingsmoment}
-\input{fase_pose}
-\input{fase_tof}
+De concrete uitwerking van de pipeline is opgesplitst over twee afzonderlijke hoofdstukken. Hoofdstuk~\ref{ch:systeemontwerp} beschrijft de bouw van de basiscomponenten: de dataset, de hoekpuntdetectie en de homografietransformatie. Hoofdstuk~\ref{ch:meetpipeline} gaat in op de eigenlijke metingen: de detectie van het landingsmoment, de bepaling van de landingspositie en de berekening van de vluchttijd.

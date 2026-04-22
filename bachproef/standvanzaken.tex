@@ -137,29 +137,31 @@ In dit onderzoek wordt YOLO11 ingezet voor drie afzonderlijke taken: het detecte
 
 Pose Estimation is een computervisietechniek waarbij de posities van specifieke lichaamspunten (\textit{keypoints}) van een persoon worden bepaald op basis van een camerabeeld. In het meestgebruikte COCO-formaat worden 17 keypoints gedetecteerd, waaronder de enkels, knieën, heupen, schouders en het hoofd.
 
-ViTPose \autocite{Xu2022} is een state-of-the-art model voor keypointdetectie dat gebruik maakt van een \textit{Vision Transformer} (ViT) als backbone. Transformerarchitecturen zijn oorspronkelijk ontwikkeld voor tekstverwerking, maar zijn later succesvol toegepast op beeldtaken doordat ze globale verbanden in een beeld kunnen modelleren. ViTPose behaalt topprestaties op de COCO keypointbenchmarks en is daarmee een geschikte kandidaat voor het nauwkeurig lokaliseren van lichaamspunten.
+ViTPose \autocite{Xu2022} is een state-of-the-art model voor keypointdetectie dat gebruik maakt van een \textit{Vision Transformer} (ViT) als backbone. Transformerarchitecturen zijn oorspronkelijk ontwikkeld voor tekstverwerking, maar zijn later succesvol toegepast op beeldtaken doordat ze globale verbanden in een beeld kunnen modelleren via het attention mechanisme. ViTPose behaalt topprestaties op de COCO keypointbenchmarks en is daarmee een geschikte kandidaat voor het nauwkeurig lokaliseren van lichaamspunten.
 
-Voor dit onderzoek was de initiële aanpak om het middelpunt tussen de twee enkels (keypoints 15 en 16) te gebruiken als nauwkeurig referentiepunt voor de landingspositie. In de praktijk bleek echter dat bij snelle trampolinesprongen de \textit{motion blur} in het landingsframe regelmatig leidt tot het wegvallen van keypointpredities. Omdat dit zich specifiek voordoet op het kritieke moment van de landing, is deze aanpak onbetrouwbaar voor dit toepassingsdomein.
+De geschiktheid van ViTPose voor trampolinecontext wordt bevestigd door \textcite{DroletRoy2026}, die het model fine-tunen op synthetische trampolinedata en daarmee \textit{state-of-the-art} 2D-keypointprestaties behalen op reële trampolineopnames. Hun resultaten tonen aan dat een gefinetuned ViTPose-model ook in multi-view 3D-reconstructie beter presteert dan het voorgetrainde basismodel, met een gemiddelde reductie van 19,6\% in Mean Per Joint Position Error (MPJPE). Dit benadrukt het potentieel van ViTPose voor de uitdagende poses en gezichtshoeken die in trampolinegymnastiek voorkomen.
+
+Voor dit onderzoek was de initiële aanpak om het middelpunt tussen de twee enkels (keypoints 15 en 16) te gebruiken als nauwkeurig referentiepunt voor de landingspositie. In de praktijk bleek echter dat bij snelle trampolinesprongen de bewegingsonscherpte (\textit{motion blur}) in het landingsframe regelmatig leidt tot het wegvallen van keypointpredities. Omdat dit zich specifiek voordoet op het kritieke moment van de landing, is deze aanpak onbetrouwbaar voor dit toepassingsdomein.
 
 \subsection{Segmentatie: SAM-2}
 \label{subsec:sam2}
 
-Als alternatief voor keypointdetectie wordt in dit onderzoek gebruikgemaakt van pixelniveau-segmentatie. In plaats van een bounding box rondom de gymnast te berekenen, produceert een segmentatiemodel een binair masker dat exact aangeeft welke pixels tot het object behoren.
+Als alternatief voor keypointdetectie wordt in dit onderzoek gebruikgemaakt van pixel-niveau segmentatie. In plaats van een bounding box rondom de gymnast te berekenen, produceert een segmentatiemodel een binair masker dat exact aangeeft welke pixels tot het object behoren.
 
-SAM-2 (\textit{Segment Anything Model 2}) \autocite{Ravi2024} is een generalistisch segmentatiemodel ontwikkeld door Meta, ontworpen voor zowel statische beelden als videosequenties. Een kenmerkend aspect van SAM-2 is de \textit{promptable} aanpak: het model accepteert een eenvoudige invoer, zoals een bounding box of een klikpunt, en genereert op basis daarvan een nauwkeurig segmentatiemasker zonder domeinspecifieke fine-tuning.
+Segment Anything Model 2 (\textit{SAM-2}) \autocite{Ravi2024} is een generalistisch segmentatiemodel ontwikkeld door Meta, ontworpen voor zowel statische beelden als videosequenties. Een kenmerkend aspect van SAM-2 is de \textit{promptable} aanpak: het model accepteert een eenvoudige invoer, zoals een bounding box of een klikpunt, en genereert op basis daarvan een nauwkeurig segmentatiemasker zonder domeinspecifieke fine-tuning.
 
-Dit biedt een belangrijk voordeel ten opzichte van pose estimation in de context van trampolinespringen. Doordat het laagste pixel van het segmentatiemasker direct wordt geëxtraheerd als voetcontactpunt, is er geen afhankelijkheid van expliciete keypointpredicties. Dit maakt de aanpak robuuster voor situaties met motion blur. In de voorgestelde pipeline levert de persoondetectie via YOLO11n een bounding box die als prompt aan SAM-2-tiny wordt meegegeven. Het laagste punt van het resulterende masker dient vervolgens als landingspixel voor de homografietransformatie.
+Dit biedt een belangrijk voordeel ten opzichte van pose estimation in de context van trampolinespringen. Doordat de laagste pixel van het segmentatiemasker direct wordt geëxtraheerd als voetcontactpunt, is er geen afhankelijkheid van expliciete keypointpredicties. Dit maakt de aanpak robuuster voor situaties met motion blur. In de voorgestelde pipeline levert de persoondetectie via YOLO11n een bounding box die als prompt aan SAM-2-tiny wordt meegegeven. Het laagste punt van het resulterende masker dient vervolgens als landingspixel voor de homografietransformatie.
 
 %----------------------------------------------------------------------
 
 \section{Datasets}
 \label{sec:datasets}
 
-Het trainen van domeinspecifieke computervisiemodellen vereist gelabelde data die representatief is voor de doelomgeving. Voor niche sporten zoals trampolinespringen zijn dergelijke datasets schaars, wat de ontwikkeling van geautomatiseerde meetsystemen moeilijker maakt.
+Het trainen van domeinspecifieke computervisiemodellen vereist data die representatief is voor de doelomgeving. Voor eerder niche sporten zoals trampolinespringen zijn dergelijke datasets schaars, wat de ontwikkeling van geautomatiseerde meetsystemen moeilijker maakt.
 
 \subsection{Trampolinedataset}
 \label{subsec:dataset-lin}
 
-\textcite{Lin2025} stellen een dataset voor, specifiek ontworpen voor de beoordeling van actiekwaliteit in trampolinegymnastiek. De dataset bevat opnames van competitieve trampolinesprongen. De dataset is gepubliceerd in het kader van onderzoek naar een causaal cross-modaal framework voor langetermijn beoordelingstaken.
+\textcite{Lin2025} stellen een dataset voor, specifiek ontworpen voor de beoordeling van actiekwaliteit in trampolinegymnastiek. De dataset bevat video-opnames van competitieve trampolinesprongen. De dataset is gepubliceerd in het kader van onderzoek naar een causaal cross-modaal framework voor langetermijn beoordelingstaken. De dataset bevat data van vier competities: Tokyo 2020, Paris 2024, Hangzhou 2022 en Buenos Aires 2018.
 
 In dit onderzoek wordt deze dataset gebruikt als trainingsdata voor twee modellen uit de pipeline: het fine-tunen van het hoekpuntdetectiemodel dat de vier hoeken van het trampolinebed lokaliseert, en het trainen van de landingsclassifier die per frame bepaalt of de gymnast al dan niet in contact is met het doek.
