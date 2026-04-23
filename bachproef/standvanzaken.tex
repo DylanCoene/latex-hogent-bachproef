@@ -8,7 +8,7 @@
 
 % Pas na deze inleidende paragraaf komt de eerste sectiehoofding.
 
-Deze literatuurstudie is opgedeeld in twee delen. In het eerste deel wordt de scoreberekening en de reglementering binnen het trampolinespringen toegelicht. Het tweede deel omvat de huidige stand van zaken op het gebied van meettechnologie{\"e}n.
+Deze literatuurstudie is opgedeeld in drie delen. In het eerste deel wordt de scoreberekening en de reglementering binnen het trampolinespringen toegelicht. Het tweede deel omvat de huidige stand van zaken op het gebied van meettechnologie{\"e}n. Het derde deel bespreekt de relevante computer vision-technieken die als bouwstenen dienen voor het systeem dat in dit onderzoek wordt ontwikkeld.
 
 \section{Scoreberekening en Reglementering}
 \label{sec:scoreberekening}
@@ -62,10 +62,10 @@ Deze tijd wordt geregistreerd in duizendsten van een seconde en vervolgens afger
     16.197 \text{ seconden} \rightarrow \lfloor 16.197 \rfloor_{\downarrow 0.01} = 16.19 \text{ punten}
 \]
 
-\section{State-of-the-art Technologie{\"e}n}
+\section{Meettechnologie{\"e}n}
 \label{sec:state_of_the_art}
 
-Er zijn verschillende methoden om de hierboven beschreven parameters te meten. Hieronder worden het huidige commerci{\"e}le standaardsysteem en recent relevant onderzoek naar alternatieve camera-gebaseerde methoden besproken.
+Er zijn verschillende methoden om de hierboven beschreven parameters te meten. Hieronder worden het huidige commerci{\"e}le meetsysteem en recent relevant onderzoek naar alternatieve camera-gebaseerde methoden besproken.
 
 \subsection{Huidige Standaard: HDTS}
 \textcite{Ferger2017} beschrijven hoe de introductie van objectieve meetwaarden voor HD en ToF heeft geleid tot de ontwikkeling van het \emph{HDTS Trampoline Measurement Device}. Dit systeem, gekoppeld aan de Eurotramp \textit{Qira 1.03} software, geldt momenteel als de standaard in competities.
@@ -99,6 +99,8 @@ ToF wordt gemeten door de krachtmetingen te combineren met een algoritme dat lan
     \label{fig:svz_krachtcurve}
 \end{figure}
 
+Het HDTS-systeem biedt hoge meetnauwkeurigheid, maar kent ook praktische nadelen. Het systeem vereist een permanente installatie van vier krachtplaten onder de trampolinepoten en is daardoor enkel haalbaar in officiële wedstrijdomgevingen met de nodige infrastructuur. Voor trainingsopstellingen in clubs zonder HDTS-licentie of voor analyse buiten competitieverband is het systeem financieel en logistiek niet toegankelijk. Dit vormt de voornaamste motivatie voor de zoektocht naar een goedkoper, camera-gebaseerd alternatief.
+
 \subsection{Computer Vision Benaderingen}
 Het onderzoek van \textcite{Park2022} presenteert een systeem dat driedimensionale voetposities op een fitnesstrampoline bepaalt. Dit is relevant om de haalbaarheid van een camera-gebaseerd alternatief voor HDTS te evalueren.
 
@@ -113,15 +115,26 @@ Figuur~\ref{fig:svz_park_pipeline} toont de werking van dit algoritme: naast de 
     \label{fig:svz_park_pipeline}
 \end{figure}
 
-De resultaten van dit onderzoek tonen een gemiddelde afwijking van 11.7 mm. Dit suggereert dat deze methode, mits aangepast voor grote trampolines, voldoende nauwkeurig kan zijn voor het bepalen van de landingszones. Geïnspireerd door deze resultaten werd in de initi{\"e}le fase van dit onderzoek eveneens ge{\"e}xperimenteerd met een cameraopstelling onder de trampoline. Dit wordt verder toegelicht in Hoofdstuk~\ref{ch:methodologie}.
+De resultaten van dit onderzoek tonen een gemiddelde afwijking van 11.7 mm. Dit suggereert dat deze methode, mits aangepast voor grote trampolines, voldoende nauwkeurig kan zijn voor het bepalen van de landingszones. De methode is echter specifiek ontwikkeld voor fitnesstrampolines en vereist een cameraopstelling onder het toestel, wat in een wedstrijdcontext moeilijk realiseerbaar is wegens toegankelijkheidsbeperkingen en veiligheidsvoorschriften. Geïnspireerd door deze resultaten werd in de initi{\"e}le fase van dit onderzoek eveneens ge{\"e}xperimenteerd met een cameraopstelling onder de trampoline. Dit wordt verder toegelicht in Hoofdstuk~\ref{ch:methodologie}.
+
+\section{Computer vision-technieken}
+\label{sec:computer-vision-technieken}
+
+De volgende subsecties bespreken de computer vision-technieken die als bouwstenen dienen voor de ontwikkelde pipeline. Hierbij komen positiebepaling via homografie, objectdetectie, pose estimation en beeldsegmentatie aan bod, gevolgd door een bespreking van de trainingsdata.
 
 % Beschrijving van hoe hawk-eye een inspiratie was voor homografie-gebaseerde positiebepaling.
 \subsection{Positiebepaling met Homografie}
 \label{subsec:hawk_eye}
 
-Naast de methode die gebruikmaakt van het registreren van schaduwen, is het ook mogelijk om camerabeelden vanaf een vast standpunt in de ruimte te kalibreren ten opzichte van een gegeven veld. Het bepalen van een positie met een camera door middel van een homografie-transformatie is sterk gebaseerd op het bekende Hawk-Eye systeem die wordt gebruikt in professionele tenniscompetities.
+Naast de methode die gebruikmaakt van het registreren van schaduwen, is het ook mogelijk om camerabeelden vanaf een vast standpunt in de ruimte te kalibreren ten opzichte van een gegeven veld. Het bepalen van een positie van een persoon of object met een camera door middel van een homografie-transformatie is sterk gebaseerd op het bekende Hawk-Eye-systeem, dat wordt gebruikt in zowel professionele tennis- als voetbalwedstrijden.
 
-Recent onderzoek, zoals beschreven door \textcite{Manikanta2025}, illustreert de werking van een geautomatiseerd systeem voor tennisanalyse. In hun werk worden deep learning-modellen (zoals YOLOv5, YOLOv8 en ResNet50) geïntegreerd om spelers, de bal en de keypoints van het veld te detecteren. Door middel van de gedetecteerde keypoints kan een homografie-matrix worden opgesteld. Deze matrix maakt het mogelijk om de cameraprojectie te transformeren naar een gestandaardiseerd bovenaanzicht, wat precieze positiebepaling van acties of atleten mogelijk maakt, onafhankelijk van het perspectief van de camera. Een gelijkaardige toepassing kan ingezet worden in het trampolinespringen om de positie van de gymnast op het trampolinebed te projecteren en zo de HD-score objectief te meten.
+Recent onderzoek, zoals beschreven door \textcite{Manikanta2025}, illustreert de werking van een geautomatiseerd systeem voor tennisanalyse. In hun werk worden deep learning-modellen (zoals YOLOv5, YOLOv8 en ResNet50) geïntegreerd om spelers, de bal en de keypoints van het veld te detecteren. Door middel van de gedetecteerde keypoints kan een homografie-matrix worden opgesteld. Deze matrix maakt het mogelijk om de cameraprojectie te transformeren naar een gestandaardiseerd bovenaanzicht, wat precieze positiebepaling van acties of atleten mogelijk maakt, onafhankelijk van het perspectief van de camera.
+
+% TODO: Figuur toevoegen van tennisveld met keypoints en homografie-transformatie
+
+Concreet betekent dit dat elk punt in het camerabeeld, uitgedrukt in pixels, eenduidig kan worden omgezet naar een punt in een tweedimensionaal vlak met correcte verhoudingen, op voorwaarde dat de vier referentiepunten nauwkeurig bekend zijn.
+
+In dit onderzoek wordt een gelijkaardige methodiek gehanteerd om de prestaties bij het trampolinespringen te analyseren met behulp van slechts één camera. Door de homografie-transformatie toe te passen op het trampolinebed, zou de positie van de gymnast bij elke landing kunnen worden geprojecteerd. Op deze manier trachten we de horizontale verplaatsing op een objectieve en geautomatiseerde wijze te meten, waarbij de optische vervorming van de camera wiskundig wordt weggewerkt om de exacte coördinaten op het trampolinebed te bepalen.
 
 \subsection{Objectdetectie: YOLO}
 \label{subsec:yolo}
@@ -130,14 +143,14 @@ Een centrale uitdaging in het voorgestelde systeem is het per frame lokaliseren 
 
 In tegenstelling tot twee-staps detectoren, zoals Faster R-CNN dat door \textcite{Park2022} werd ingezet, voert YOLO de volledige detectiepijplijn in één enkele doorgang door het neurale netwerk uit. Het beeld wordt opgedeeld in een raster, waarbij elke cel tegelijk een bounding box, een betrouwbaarheidsscore en een klasse-indeling voorspelt. Dit maakt het model bijzonder geschikt voor \textit{real-time} toepassingen. De meest recente generatie, YOLO11 van Ultralytics, ondersteunt naast standaard objectdetectie ook een \textit{pose}-variant voor keypointdetectie en een \textit{classificatie}-variant.
 
-In dit onderzoek wordt YOLO11 ingezet voor drie afzonderlijke taken: het detecteren van de vier hoekpunten van het trampolinebed (via de pose-variant), het classificeren van frames als \textit{Landed} of \textit{Not Landed}, en het lokaliseren van de gymnast als persoon. De eerste twee modellen worden daarvoor specifiek fine-tuned op trampolinedata, zoals besproken in Sectie~\ref{sec:datasets}.
+In dit onderzoek wordt YOLO11 ingezet voor drie afzonderlijke taken: het detecteren van de vier hoekpunten van het trampolinebed (via de pose-variant), het classificeren van frames als \textit{Landed} of \textit{Not Landed}, en het lokaliseren van de gymnast als persoon. De eerste twee modellen worden daarvoor specifiek fine-tuned op trampolinedata, zoals besproken in Sectie~\ref{sec:datasets}. De veelzijdigheid van YOLO11, die detectie, classificatie en keypointdetectie combineert in één modelfamilie, maakt het tot een efficiënte bouwsteen voor een geïntegreerde pipeline waarbij meerdere deeltaken met hetzelfde framework worden opgelost.
 
 \subsection{Pose Estimation}
 \label{subsec:pose-estimation}
 
 Pose Estimation is een computervisietechniek waarbij de posities van specifieke lichaamspunten (\textit{keypoints}) van een persoon worden bepaald op basis van een camerabeeld. In het meestgebruikte COCO-formaat worden 17 keypoints gedetecteerd, waaronder de enkels, knieën, heupen, schouders en het hoofd.
 
-ViTPose \autocite{Xu2022} is een state-of-the-art model voor keypointdetectie dat gebruik maakt van een \textit{Vision Transformer} (ViT) als backbone. Transformerarchitecturen zijn oorspronkelijk ontwikkeld voor tekstverwerking, maar zijn later succesvol toegepast op beeldtaken doordat ze globale verbanden in een beeld kunnen modelleren via het attention mechanisme. ViTPose behaalt topprestaties op de COCO keypointbenchmarks en is daarmee een geschikte kandidaat voor het nauwkeurig lokaliseren van lichaamspunten.
+ViTPose \autocite{Xu2022} is een state-of-the-art model voor keypointdetectie dat gebruik maakt van een \textit{Vision Transformer} (ViT) als onderliggend basisnetwerk (backbone). Transformerarchitecturen zijn oorspronkelijk ontwikkeld voor tekstverwerking, maar zijn later succesvol toegepast op beeldtaken doordat ze globale verbanden in een beeld kunnen modelleren via een aandachtsmechanisme (attention mechanism), waarbij het model zelf bepaalt welke beeldregio's het meest relevant zijn voor de taak. ViTPose behaalt topprestaties op de COCO keypointbenchmarks en is daarmee een geschikte kandidaat voor het nauwkeurig lokaliseren van lichaamspunten.
 
 De geschiktheid van ViTPose voor trampolinecontext wordt bevestigd door \textcite{DroletRoy2026}, die het model fine-tunen op synthetische trampolinedata en daarmee \textit{state-of-the-art} 2D-keypointprestaties behalen op reële trampolineopnames. Hun resultaten tonen aan dat een gefinetuned ViTPose-model ook in multi-view 3D-reconstructie beter presteert dan het voorgetrainde basismodel, met een gemiddelde reductie van 19,6\% in Mean Per Joint Position Error (MPJPE). Dit benadrukt het potentieel van ViTPose voor de uitdagende poses en gezichtshoeken die in trampolinegymnastiek voorkomen.
 
@@ -150,16 +163,16 @@ Als alternatief voor keypointdetectie wordt in dit onderzoek gebruikgemaakt van 
 
 Segment Anything Model 2 (\textit{SAM-2}) \autocite{Ravi2024} is een algemeen segmentatiemodel ontwikkeld door Meta, ontworpen voor zowel statische beelden als videosequenties. Wat SAM-2 kenmerkt is de prompt-gestuurde aanpak. Het model accepteert een eenvoudige invoer, zoals een bounding box of een pixelpunt, en genereert op basis daarvan een nauwkeurig segmentatiemasker zonder domeinspecifieke fine-tuning.
 
-Dit biedt een belangrijk voordeel ten opzichte van pose estimation in de context van trampolinespringen. Doordat de laagste pixel van het segmentatiemasker direct wordt geëxtraheerd als voetcontactpunt, is er geen afhankelijkheid van expliciete keypointvoorspellingen. Dit maakt de aanpak robuuster voor situaties met veel motion blur. In de voorgestelde pipeline levert de persoondetectie via YOLO11n een bounding box die als prompt aan SAM-2-tiny wordt meegegeven. Het laagste punt van het resulterende masker dient vervolgens als landingspixel voor de homografietransformatie.
+Dit biedt een belangrijk voordeel ten opzichte van pose estimation in de context van trampolinespringen. Doordat de laagste pixel van het segmentatiemasker direct wordt geëxtraheerd als voetcontactpunt, is er geen afhankelijkheid van expliciete keypointvoorspellingen. Dit maakt de aanpak robuuster voor situaties met veel motion blur. In de voorgestelde pipeline levert de persoondetectie via YOLO11n een bounding box die als prompt aan SAM-2-tiny wordt meegegeven. Het laagste punt van het resulterende masker dient vervolgens als landingspixel voor de homografietransformatie. De gekozen variant SAM-2-tiny biedt een gunstige balans tussen segmentatienauwkeurigheid en rekentijd, wat relevant is voor toepassingen waarbij meerdere frames snel na elkaar moeten worden verwerkt.
 
-\section{Datasets}
+\subsection{Datasets}
 \label{sec:datasets}
 
 Het trainen van domeinspecifieke computervisiemodellen vereist data die representatief is voor de omgeving waarin ze zullen worden gebruikt. Voor eerder niche sporten zoals trampolinespringen zijn dergelijke datasets schaars, wat de ontwikkeling van geautomatiseerde meetsystemen een stuk moeilijker maakt.
 
-\subsection{Trampolinedataset}
+\subsubsection{Trampolinedataset}
 \label{subsec:dataset-lin}
 
 \textcite{Lin2025} stellen een dataset voor, specifiek ontworpen voor de beoordeling van actiekwaliteit in trampolinegymnastiek. De dataset bevat 206 video-opnames met finale HD- en ToF-score annotaties van competitieve trampolinesprongen. De dataset is gepubliceerd in het kader van onderzoek naar een causaal cross-modal framework voor langetermijn beoordelingstaken. De dataset bevat data van vier competities: Tokyo 2020, Paris 2024, Hangzhou 2022 en Buenos Aires 2018.
 
-In dit onderzoek wordt deze dataset gebruikt als trainingsdata voor twee modellen uit de pipeline: het fine-tunen van het hoekpuntdetectiemodel dat de vier hoeken van het trampolinebed lokaliseert, en het trainen van de landingsclassifier die per frame bepaalt of de gymnast al dan niet in contact is met het doek. Daarnaast wordt de dataset gebruikt als testset voor het evalueren van de nauwkeurigheid van het volledige systeem, door de gemeten HD- en ToF-waarden te vergelijken met de echte scores.
+In dit onderzoek wordt deze dataset gebruikt als trainingsdata voor twee modellen uit de pipeline: het fine-tunen van het hoekpuntdetectiemodel dat de vier hoeken van het trampolinebed lokaliseert, en het trainen van de landingsclassifier die per frame bepaalt of de gymnast al dan niet in contact is met het doek. Daarnaast wordt de dataset gebruikt als testset voor het evalueren van de nauwkeurigheid van het volledige systeem, door de gemeten HD- en ToF-waarden te vergelijken met de echte scores. De variatie in camerastandpunten en competitieomgevingen binnen de dataset maakt het een geschikte bron voor het trainen van modellen die robuust moeten zijn over verschillende opstellingen.
