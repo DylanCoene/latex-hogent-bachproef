@@ -141,29 +141,70 @@ In dit onderzoek wordt een gelijkaardige methodiek gehanteerd om de prestaties b
 
 Een centrale uitdaging in het voorgestelde systeem is het per frame lokaliseren van zowel de trampoline als de gymnast. Hiervoor wordt gebruikgemaakt van de YOLO-familie (\textit{You Only Look Once}) van objectdetectiemodellen \autocite{Jocher_Ultralytics_YOLO_2023}.
 
-In tegenstelling tot twee-staps detectoren, zoals Faster R-CNN dat door \textcite{Park2022} werd ingezet, voert YOLO de volledige detectiepijplijn in één enkele doorgang door het neurale netwerk uit. Het beeld wordt opgedeeld in een raster, waarbij elke cel tegelijk een bounding box, een betrouwbaarheidsscore en een klasse-indeling voorspelt. Dit maakt het model bijzonder geschikt voor \textit{real-time} toepassingen. De meest recente generatie, YOLO11 van Ultralytics, ondersteunt naast standaard objectdetectie ook een \textit{pose}-variant voor keypointdetectie en een \textit{classificatie}-variant.
+In tegenstelling tot twee-staps detectoren, zoals Faster R-CNN dat door \textcite{Park2022} werd ingezet, voert YOLO de volledige detectie in één enkele doorgang door het neurale netwerk uit. Het beeld wordt opgedeeld in een raster, waarbij elke cel tegelijk een bounding box, een betrouwbaarheidsscore en een klasse-indeling voorspelt. Dit maakt het model bijzonder geschikt voor real-time toepassingen. De meest recente generatie, YOLOv11 van Ultralytics, ondersteunt naast standaard objectdetectie ook een pose-variant voor keypointdetectie en een \textit{classificatie}-variant.
 
-In dit onderzoek wordt YOLO11 ingezet voor drie afzonderlijke taken: het detecteren van de vier hoekpunten van het trampolinebed (via de pose-variant), het classificeren van frames als \textit{Landed} of \textit{Not Landed}, en het lokaliseren van de gymnast als persoon. De eerste twee modellen worden daarvoor specifiek fine-tuned op trampolinedata, zoals besproken in Sectie~\ref{sec:datasets}. De veelzijdigheid van YOLO11, die detectie, classificatie en keypointdetectie combineert in één modelfamilie, maakt het tot een efficiënte bouwsteen voor een geïntegreerde pipeline waarbij meerdere deeltaken met hetzelfde framework worden opgelost.
+% TODO: Figuur van yolo proces toevoegen
+% TODO: Figuur object detectie + pose detectie?
+
+In dit onderzoek wordt YOLOv11 ingezet voor drie afzonderlijke taken: het detecteren van de vier hoekpunten van het trampolinebed (via de pose-variant), het classificeren van frames als \textit{Landed} of \textit{Not Landed}, en het lokaliseren van de gymnast als persoon. De eerste twee modellen worden daarvoor specifiek gefinetuned op trampolinedata, zoals besproken in Sectie~\ref{sec:datasets}. De veelzijdigheid van YOLOv11, die detectie, classificatie en keypointdetectie combineert in één modelfamilie, maakt het bouwen van een geïntegreerde pipeline zeer efficiënt, waarbij meerdere deeltaken met hetzelfde framework worden opgelost.
 
 \subsection{Pose Estimation}
 \label{subsec:pose-estimation}
 
-Pose Estimation is een computervisietechniek waarbij de posities van specifieke lichaamspunten (\textit{keypoints}) van een persoon worden bepaald op basis van een camerabeeld. In het meestgebruikte COCO-formaat worden 17 keypoints gedetecteerd, waaronder de enkels, knieën, heupen, schouders en het hoofd.
+Pose Estimation is een computervisietechniek waarbij de posities van specifieke lichaamspunten (\textit{keypoints}) van een persoon worden bepaald op basis van een camerabeeld. In het meestgebruikte formaat; het COCO-formaat (Common Objects in Context), worden 17 keypoints gedefinieerd en gedetecteerd, waaronder de enkels, knieën, heupen, schouders en het hoofd. Deze keypoints kunnen worden gebruikt om de houding en beweging van een persoon te analyseren.
+
+Codefragment~\ref{lst:coco-keypoints} illustreert hoe een COCO-annotatie er in de praktijk uitziet. Elk keypoint wordt opgeslagen als een triplet \texttt{(x,~y,~v)}: de pixelco{\"o}rdinaten gevolgd door een zichtbaarheidswaarde \texttt{v}. De waarde \texttt{2} geeft aan dat het keypoint zichtbaar is in het beeld; \texttt{1} betekent dat het aanwezig is maar wordt afgeschermd (\textit{occluded}); \texttt{0} betekent dat het keypoint niet gelabeld werd.
+
+\begin{listing}[ht]
+    \begin{minted}{javascript}
+{
+  "keypoints": [
+    "nose",          "left_eye",      "right_eye",
+    "left_ear",      "right_ear",     "left_shoulder",
+    "right_shoulder","left_elbow",    "right_elbow",
+    "left_wrist",    "right_wrist",   "left_hip",
+    "right_hip",     "left_knee",     "right_knee",
+    "left_ankle",    "right_ankle"
+  ],
+  "annotations": [{
+    "keypoints": [
+      320, 112, 2,  /* nose         (x, y, v=2: zichtbaar)  */
+      308, 103, 2,  /* left_eye                              */
+      332, 103, 2,  /* right_eye                             */
+      /* ... 11 andere keypoints ...                         */
+      278, 384, 2,  /* left_ankle                            */
+      341, 381, 2   /* right_ankle                           */
+    ],
+    "num_keypoints": 17
+  }]
+}
+\end{minted}
+    \caption[COCO keypointannotatie]{Structuur van een COCO-annotatie. Elk keypoint bestaat uit drie waarden \texttt{(x,~y,~v)}: pixelco{\"o}rdinaten en een zichtbaarheidswaarde \texttt{v} (0~=~niet gelabeld, 1~=~occluded, 2~=~zichtbaar). De volledige array telt 51 waarden (17 keypoints $\times$ 3).}
+    \label{lst:coco-keypoints}
+\end{listing}
 
 ViTPose \autocite{Xu2022} is een state-of-the-art model voor keypointdetectie dat gebruik maakt van een \textit{Vision Transformer} (ViT) als onderliggend basisnetwerk (backbone). Transformerarchitecturen zijn oorspronkelijk ontwikkeld voor tekstverwerking, maar zijn later succesvol toegepast op beeldtaken doordat ze globale verbanden in een beeld kunnen modelleren via een aandachtsmechanisme (attention mechanism), waarbij het model zelf bepaalt welke beeldregio's het meest relevant zijn voor de taak. ViTPose behaalt topprestaties op de COCO keypointbenchmarks en is daarmee een geschikte kandidaat voor het nauwkeurig lokaliseren van lichaamspunten.
 
-De geschiktheid van ViTPose voor trampolinecontext wordt bevestigd door \textcite{DroletRoy2026}, die het model fine-tunen op synthetische trampolinedata en daarmee \textit{state-of-the-art} 2D-keypointprestaties behalen op reële trampolineopnames. Hun resultaten tonen aan dat een gefinetuned ViTPose-model ook in multi-view 3D-reconstructie beter presteert dan het voorgetrainde basismodel, met een gemiddelde reductie van 19,6\% in Mean Per Joint Position Error (MPJPE). Dit benadrukt het potentieel van ViTPose voor de uitdagende poses en gezichtshoeken die in trampolinegymnastiek voorkomen.
+% TODO: Figuur van ViT Attention mechanisme toevoegen
 
-Voor dit onderzoek was de initiële aanpak om het middelpunt tussen de twee enkels (keypoints 15 en 16) te gebruiken als nauwkeurig referentiepunt voor de landingspositie. In de praktijk bleek echter dat bij snelle trampolinesprongen de bewegingsonscherpte (\textit{motion blur}) in het landingsframe regelmatig leidt tot het wegvallen van keypointpredities. Omdat dit zich specifiek voordoet op het kritieke moment van de landing, is deze aanpak onbetrouwbaar voor dit toepassingsdomein.
+De geschiktheid van ViTPose voor trampolinecontext wordt bevestigd door recent onderzoek van \textcite{DroletRoy2026}, die het model gebruikten om verder te finetunen op synthetische trampolinedata en daarmee \textit{state-of-the-art} 2D-keypointprestaties behalen op echte trampolineopnames. Hun resultaten tonen aan dat een gefinetuned ViTPose-model ook bij 3D-reconstructie van beelden uit meerdere camerastandpunten beter presteert dan het voorgetrainde basismodel. Er werd een gemiddelde reductie van 19,6\% in Mean Per Joint Position Error (MPJPE) gerapporteerd. Dit benadrukt het potentieel van ViTPose voor de uitdagende poses en gezichtshoeken die in trampolinegymnastiek voorkomen.
+
+% TODO: Figuur van paper van DroletRoy toevoegen???
+
+Voor dit onderzoek was de initiële aanpak om het middelpunt tussen de twee enkels (keypoints 16 en 17) te gebruiken als nauwkeurig referentiepunt voor de landingspositie. In de praktijk bleek echter dat bij snelle trampolinesprongen de bewegingsonscherpte (\textit{motion blur}) in het landingsframe regelmatig leidt tot het wegvallen van keypointpredities. Omdat dit zich specifiek voordoet op het kritieke moment van de landing, is deze aanpak onbetrouwbaar voor dit toepassingsdomein.
 
 \subsection{Segmentatie: SAM-2}
 \label{subsec:sam2}
 
 Als alternatief voor keypointdetectie wordt in dit onderzoek gebruikgemaakt van pixel-niveau segmentatie. In plaats van een bounding box rondom de gymnast te berekenen, produceert een segmentatiemodel een binair masker dat exact aangeeft welke pixels tot het object behoren.
 
-Segment Anything Model 2 (\textit{SAM-2}) \autocite{Ravi2024} is een algemeen segmentatiemodel ontwikkeld door Meta, ontworpen voor zowel statische beelden als videosequenties. Wat SAM-2 kenmerkt is de prompt-gestuurde aanpak. Het model accepteert een eenvoudige invoer, zoals een bounding box of een pixelpunt, en genereert op basis daarvan een nauwkeurig segmentatiemasker zonder domeinspecifieke fine-tuning.
+% TODO: Figuur voorbeeld segmentatie met uitleg toevoegen
 
-Dit biedt een belangrijk voordeel ten opzichte van pose estimation in de context van trampolinespringen. Doordat de laagste pixel van het segmentatiemasker direct wordt geëxtraheerd als voetcontactpunt, is er geen afhankelijkheid van expliciete keypointvoorspellingen. Dit maakt de aanpak robuuster voor situaties met veel motion blur. In de voorgestelde pipeline levert de persoondetectie via YOLO11n een bounding box die als prompt aan SAM-2-tiny wordt meegegeven. Het laagste punt van het resulterende masker dient vervolgens als landingspixel voor de homografietransformatie. De gekozen variant SAM-2-tiny biedt een gunstige balans tussen segmentatienauwkeurigheid en rekentijd, wat relevant is voor toepassingen waarbij meerdere frames snel na elkaar moeten worden verwerkt.
+Segment Anything Model 2 (\textit{SAM-2}) \autocite{Ravi2024} is een algemeen segmentatiemodel ontwikkeld door Meta, ontworpen voor zowel statische beelden als videosequenties. Wat SAM-2 kenmerkt is de prompt-gestuurde aanpak. Het model accepteert een eenvoudige invoer, zoals een bounding box of een pixelpunt, en genereert op basis daarvan een nauwkeurig segmentatiemasker zonder specifieke finetuning.
+
+% TODO: Figuur prompt-based segmentatie toevoegen
+
+Dit biedt een belangrijk voordeel ten opzichte van pose estimation in de context van trampolinespringen. Doordat de laagste pixel van het segmentatiemasker direct wordt geëxtraheerd als voetcontactpunt, is er geen afhankelijkheid van expliciete keypointvoorspellingen. Dit maakt de aanpak robuuster voor situaties met veel motion blur. In de voorgestelde pipeline levert de persoondetectie via YOLOv11n een bounding box die als prompt aan SAM-2-tiny wordt meegegeven. Het laagste punt van het resulterende masker dient vervolgens als landingspixel voor de homografietransformatie. De gekozen variant SAM-2-tiny biedt een gunstige balans tussen segmentatienauwkeurigheid en berekentijd, wat relevant is voor toepassingen waarbij meerdere frames snel na elkaar moeten worden verwerkt.
 
 \subsection{Datasets}
 \label{sec:datasets}
@@ -173,6 +214,8 @@ Het trainen van domeinspecifieke computervisiemodellen vereist data die represen
 \subsubsection{Trampolinedataset}
 \label{subsec:dataset-lin}
 
-\textcite{Lin2025} stellen een dataset voor, specifiek ontworpen voor de beoordeling van actiekwaliteit in trampolinegymnastiek. De dataset bevat 206 video-opnames met finale HD- en ToF-score annotaties van competitieve trampolinesprongen. De dataset is gepubliceerd in het kader van onderzoek naar een causaal cross-modal framework voor langetermijn beoordelingstaken. De dataset bevat data van vier competities: Tokyo 2020, Paris 2024, Hangzhou 2022 en Buenos Aires 2018.
+\textcite{Lin2025} stellen een dataset voor, specifiek ontworpen voor de beoordeling van actiekwaliteit in trampolinegymnastiek. De dataset bevat 206 video-opnames met finale HD- en ToF-score annotaties van competitieve trampolinesprongen. De dataset is gepubliceerd in het kader van onderzoek naar een causaal cross-modal framework voor langetermijn beoordelingstaken. De dataset bevat data van vier competities: Buenos Aires 2018, Tokyo 2020, Hangzhou 2022 en Paris 2024.
 
-In dit onderzoek wordt deze dataset gebruikt als trainingsdata voor twee modellen uit de pipeline: het fine-tunen van het hoekpuntdetectiemodel dat de vier hoeken van het trampolinebed lokaliseert, en het trainen van de landingsclassifier die per frame bepaalt of de gymnast al dan niet in contact is met het doek. Daarnaast wordt de dataset gebruikt als testset voor het evalueren van de nauwkeurigheid van het volledige systeem, door de gemeten HD- en ToF-waarden te vergelijken met de echte scores. De variatie in camerastandpunten en competitieomgevingen binnen de dataset maakt het een geschikte bron voor het trainen van modellen die robuust moeten zijn over verschillende opstellingen.
+% TODO: Figuur voorbeeldframes uit de dataset toevoegen
+
+In dit onderzoek wordt de dataset opgesplitst, waarbij een deel wordt gebruikt als trainingsdata voor twee modellen uit de pipeline: het finetunen van het hoekpuntdetectiemodel dat de vier hoeken van het trampolinebed lokaliseert, en het trainen van de landingsclassifier die per frame bepaalt of de gymnast al dan niet in contact is met het doek. Daarnaast wordt een apart gehouden deel van de dataset ingezet als testset voor het evalueren van de nauwkeurigheid van het volledige systeem, door de gemeten HD- en ToF-waarden te vergelijken met de werkelijke scores. De variatie in camerastandpunten en competitieomgevingen binnen de dataset maakt het een geschikte bron voor het trainen van modellen die robuust moeten zijn over verschillende opstellingen.
