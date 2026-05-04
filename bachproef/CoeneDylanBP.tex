@@ -46,6 +46,7 @@
 }
 
 % Other packages not already included can be imported here
+\usepackage{float} % Enables [H] placement specifier to force figures in-place
 
 %%---------- Document metadata -------------------------------------------------
 \author{Dylan Coene}
@@ -61,7 +62,7 @@
 %\institution{Internshipcompany BVBA.}
 
 %% Add global exceptions to the hyphenation here
-\hyphenation{back-slash}
+\hyphenation{back-slash tijds-in-ten-sie-ve lan-dings-po-si-tie-be-pa-ling ho-mo-gra-fie-trans-for-ma-tie pix-el-co-ör-di-na-ten lan-dings-mo-ment-de-tec-tie kracht-pla-ten}
 
 %% The bibliography (style and settings are  found in hogentthesis.cls)
 \addbibresource{bachproef.bib}            %% Bibliography file
@@ -110,9 +111,9 @@
 
 \listoffigures
 
-%\listoftables
+\listoftables
 
-%\listoflistings
+\listoflistings
 
 % Als je een lijst van afkortingen of termen wil toevoegen, dan hoort die
 % hier thuis. Gebruik bijvoorbeeld de ``glossaries'' package.
@@ -136,7 +137,7 @@
 % vormen. De structuur en titels hangen af van je eigen onderzoek. Je kan bv.
 % elke fase in je onderzoek in een apart hoofdstuk bespreken.
 
-\input{evaluatie}
+\input{resultaten}
 \input{discussie}
 \input{conclusie}
 

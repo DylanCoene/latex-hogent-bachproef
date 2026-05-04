@@ -1,0 +1,43 @@
+% !TEX root = CoeneDylanBP.tex
+%%=============================================================================
+%% Discussie
+%%=============================================================================
+
+\chapter{Discussie}
+\label{ch:discussie}
+
+\section{Globale beoordeling}
+\label{sec:discussie-globaal}
+
+De ontwikkelde pipeline toont aan dat een low-cost computer vision-systeem de fundamentele componenten van HD- en ToF-meting kan realiseren.
+
+De HD-resultaten tonen een redelijke absolute fout in 1D-modus (MAE = 0,649), wat suggereert dat de pipeline de globale orde van de HD-scores van de atleten betrouwbaar reproduceert. De absolute scores wijken echter nog te veel af om direct als vervanger van het HDTS-systeem te dienen. Verdere verbetering van de hoekpuntdetectie op het moment van landing en het gebruik van een camera met hogere framerate zouden de grootste winsten opleveren voor de absolute nauwkeurigheid.
+
+De ToF-resultaten (MAE = 5,253\,s) zijn onvoldoende om de gestelde MAE-eis van 0,2 seconden te halen. Net als bij de HD-metingen zou de nauwkeurigheid aanzienlijk verbeteren bij het gebruik van een camera met een hogere framerate, maar ook een nauwkeurigere detectie van het landingsmoment. De huidige afwijking is echter ook deels te wijten aan het ontbreken van per-sprong annotaties in de dataset, waardoor een systematische fouten niet kunnen worden opgespoord.
+
+
+\section{Limitaties}
+\label{sec:limitaties}
+
+De resultaten uit Hoofdstuk~\ref{ch:resultaten} wijzen op drie onderliggende structurele beperkingen die de prestaties van de pipeline fundamenteel beïnvloeden.
+
+De eerste is de afhankelijkheid van framerate voor zowel de ToF-schatting als het eerste-frame probleem. Beide zijn inherent aan de frame-gebaseerde verwerking: de tijdsresolutie wordt hard begrensd door het aantal beelden per seconde, en dit effect cumuleert over een volledige reeks sprongen. Dit is geen kwestie van modelkwaliteit, maar van de meetmethode zelf.
+
+Een tweede structurele beperking is het opeenstapelen van fouten binnen de pipeline. Omdat de stappen van hoekpuntdetectie tot de uiteindelijke landingspositie nauw met elkaar verbonden zijn, werkt elke kleine afwijking in het begin door in het eindresultaat. Een onnauwkeurigheid in de hoekpunten resulteert direct in een grotere metrische fout, vooral langs de diepte-as. Hierdoor is het lastig om te bepalen welk specifiek onderdeel verantwoordelijk is voor de uiteindelijke afwijking.
+
+De derde beperking betreft de generaliseerbaarheid. Beide gefinetunte modellen zijn getraind op een relatief kleine dataset van wedstrijdbeelden uit een beperkt aantal competities. Dit beperkt de robuustheid bij andere cameraopstellingen, trampolineomgevingen of beeldkwaliteiten. Daarnaast verwerken alle modellen individuele frames zonder temporele context, waardoor kortstondige occlusies of motion blur niet worden overbrugd door informatie uit omliggende frames.
+
+\section{Aanbevelingen voor verder onderzoek}
+\label{sec:aanbevelingen}
+
+Op basis van de vastgestelde limitaties en de in dit onderzoek geïdentificeerde bottlenecks worden een aantal concrete richtingen voorgesteld voor toekomstig onderzoek.
+
+De meest directe verbetering voor de framerate-bottleneck is het gebruik van een camera met hogere framerate. Bij 60 fps daalt de onzekerheid per landing tot circa 17\,ms, wat de cumulatieve fout over een volledige reeks ruimschoots binnen de gestelde MAE-eis brengt. De pipeline steunt uitsluitend op lichtgewicht open-source modellen die draaien op een consumentenlaptop. In combinatie met een standaard sportcamera zou de totale hardwarekost ruimschoots binnen een budget van \euro{}500 vallen, maar dit werd in dit onderzoek niet concreet gevalideerd omdat gebruik werd gemaakt van een bestaande online dataset.
+
+De opeenstapeling van fouten langs de diepte-as vormt een tweede bottleneck die via de cameraopstelling kan worden aangepakt. Een tweede camera vanuit een loodrecht perspectief zou de voor-achter positie onafhankelijk kunnen meten, zodat beide assen nauwkeurig bepaald worden zonder te steunen op de gevoelige diepte-richting van de homografietransformatie. Dit vereist synchronisatie tussen de twee camera's en een methode om de gegevens te combineren. Een alternatief is een bovenaanzichtcamera, waarbij de landingspositie direct zichtbaar is zonder perspectieve vervorming. Dit elimineert het diepte-as probleem volledig, maar is in een mobiele trainingsomgeving moeilijker praktisch te realiseren.
+
+Voor de landingspositiebepaling en landingsmomentdetectie bieden temporele modellen een veelbelovend alternatief voor de huidige frame-gebaseerde aanpak. Videogebaseerde pose estimation of tracking-modellen die meerdere opeenvolgende frames tegelijk verwerken, zijn inherent robuuster bij motion blur en kortstondige occlusies. Dit sluit ook aan op de vraag of een meer geïntegreerde, end-to-end aanpak betere resultaten oplevert dan de huidige modulaire pipeline: een model dat landingsmoment en -positie gelijktijdig voorspelt, elimineert de foutdoorwerking tussen afzonderlijke stappen.
+
+De modelgeneralisatie kan worden verbeterd door een grotere en meer diverse dataset samen te stellen, met beelden vanuit verschillende hoeken, omgevingen en belichtingsomstandigheden. Data-augmentatie, zoals rotatie, ruis en cropping, kan dit gedeeltelijk compenseren. Het hoekpuntdetectiemodel kan verder worden verfijnd door specifieke aandacht voor frames waarbij het doek sterk doorzakt, wat de stabiliteit op het landingsmoment sterk zou moeten verbeteren. Wanneer de cameraopstelling vast blijft (bijvoorbeeld in een trainingshal), wordt camerakalibratie haalbaar, wat de homografietransformatie verder kan verbeteren door lensdistorsie te corrigeren.
+
+Een cruciale stap voor vervolgonderzoek is het gelijktijdig inzetten van het officiële HDTS-systeem om exacte referentiedata per sprong te verzamelen. Door videobeelden direct te koppelen aan de objectieve metingen van het echte systeem, kan een hoogwaardige dataset met per-sprong grondwaarheid worden gecreëerd. Dit maakt niet alleen een nauwkeurigere evaluatie per individuele sprong mogelijk, maar opent ook de weg naar gesuperviseerde deep learning technieken waarbij modellen direct getraind worden op de gevalideerde scores van de officiële hardware.

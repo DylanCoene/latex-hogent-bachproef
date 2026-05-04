@@ -20,21 +20,21 @@ Turnclubs met beperkte budgetten kunnen zich hierdoor geen HDTS-systeem veroorlo
 \label{sec:onderzoeksdoelstelling}
 
 Het doel van dit onderzoek is om een \textit{proof-of-concept} te ontwikkelen van een kosteneffectief alternatief voor commerci{\"e}le HDTS-systemen op basis van computer vision. Het beoogde resultaat is een werkend prototype met een vaste cameraopstelling die voldoet aan de volgende criteria:
-\begin{itemize} % TODO: Evaluatiecriteria realistischer maken
-    \item Een totale hardwarekost van minder dan €500.
-    \item Een classificatienauwkeurigheid voor HD-zones van minstens 90\%.
-    \item Een gemiddelde absolute afwijking (MAE) voor de vluchttijd van minder dan 0.2 seconden.
+\begin{itemize}
+    \item Aantonen dat de pipeline HD-landingszones correct kan onderscheiden op basis van videobeelden alleen, als proof-of-concept voor een camera-gebaseerde aanpak.
+    \item Een gemiddelde absolute afwijking (MAE) voor de vluchttijd van minder dan 0,2 seconden, bij gebruik van video met voldoende framerate.
+    \item Een systeemkost die significant lager ligt dan die van het commerci{\"e}le HDTS-systeem, als ontwerpdoel voor een praktische opstelling.
 \end{itemize}
 
 \section{\IfLanguageName{dutch}{Onderzoeksvraag}{Research question}}%
 \label{sec:onderzoeksvraag}
 
 De centrale hoofdvraag van deze bachelorproef luidt: 
-\textit{Hoe kan een goedkoop computer vision-systeem worden ontwikkeld dat horizontale verplaatsing en vluchttijd bij trampolinespringen accuraat kan meten, als betaalbaar alternatief voor het HDTS-meetsysteem?}
+\textit{Hoe kan een goedkoop computer vision-systeem worden ontwikkeld dat horizontale verplaatsing en vluchttijd bij trampolinespringen betrouwbaar kan benaderen, als betaalbaar alternatief voor het HDTS-meetsysteem?}
 
 Om deze vraag te beantwoorden, worden onder meer de volgende deelvragen behandeld:
 \begin{itemize}
-    \item Welke hardware-configuratie (resolutie, framerate en positie) levert de beste balans tussen toegankelijkheid, gebruiksgemak en nauwkeurigheid op?
+    \item Welke stappen in de pipeline vormen de voornaamste bottleneck voor de nauwkeurigheid, en hoe werken fouten van afzonderlijke componenten door naar het eindresultaat?
     \item Welke computer vision-technieken zijn het meest geschikt voor het detecteren van landingsposities en contactmomenten? % Homography transformation, object detection, pose estimation, ...
     \item Welke pre-processing stappen zijn noodzakelijk om correcte inschattingen van HD en ToF te kunnen maken?
     \item Welke state-of-the-art modellen kunnen bijdragen aan een hogere nauwkeurigheid? % pose estimation, depth estimation, ...
@@ -48,12 +48,10 @@ De rest van deze bachelorproef is als volgt opgebouwd:
 
 In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein, op basis van een literatuurstudie.
 
-In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht: de iteratieve aanpak en de initiële verkenning die de keuze voor de uiteindelijke aanpak motiveerden.
+In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht: de iteratieve aanpak en de opeenvolgende experimentele fasen die leidden tot de ontwikkelde pipeline, van de initi{\"e}le verkenning en dataverzameling over hoekpuntdetectie en homografietransformatie tot landingsmomentdetectie, landingspositiebepaling en ToF-schatting.
 
-In Hoofdstuk~\ref{ch:systeemontwerp} worden de drie bouwstenen van het systeem uitgewerkt: de gebruikte trainingsdata, de automatische detectie van de trampolinehoekpunten en de homografietransformatie die pixelcoördinaten omzet naar metrische posities op het trampolinedoek.
+In Hoofdstuk~\ref{ch:resultaten} worden de resultaten van de pipeline besproken per component en getoetst aan de vooropgestelde criteria.
 
-In Hoofdstuk~\ref{ch:meetpipeline} wordt de eigenlijke meetpipeline beschreven: hoe het landingsmoment gedetecteerd wordt, hoe de landingspositie bepaald wordt en hoe de vluchttijd berekend wordt op basis van de gedetecteerde contactmomenten.
+In Hoofdstuk~\ref{ch:discussie} worden de limitaties van het ontwikkelde systeem besproken en aanbevelingen voor verder onderzoek geformuleerd.
 
-In Hoofdstuk~\ref{ch:evaluatie} worden de resultaten van de pipeline kwalitatief besproken per component, op basis van visuele observaties. Daarbij worden de beperkingen van het systeem in kaart gebracht en getoetst aan de vooropgestelde criteria.
-
-In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt de conclusie gegeven en een antwoord geformuleerd op de onderzoeksvragen. Daarbij wordt ook een aanzet gegeven voor toekomstig onderzoek binnen dit domein.
+In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt de conclusie gegeven en een antwoord geformuleerd op de onderzoeksvragen.

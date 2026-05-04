@@ -1,0 +1,121 @@
+% !TeX root = CoeneDylanBP.tex
+%%=============================================================================
+%% Resultaten
+%%=============================================================================
+
+\chapter{Resultaten}
+\label{ch:resultaten}
+
+Dit hoofdstuk bespreekt de resultaten van de ontwikkelde pipeline per component. Doordat er geen toegang was tot het HDTS-meetsysteem als referentie, was kwantificatie op het niveau van individuele sprongen niet mogelijk. De dataset van \textcite{Lin2025} bevat echter wel de eindscores voor HD en ToF per video, dit zijn de cumulatieve scores over de volledige reeks van tien sprongen. Dit beperkt de evaluatie tot een vergelijking op routineniveau: de som van alle landingsafwijkingen en de totale vluchttijd over een volledige routine worden vergeleken met de bijbehorende waarheidswaarden. De pipeline werd geëvalueerd op 51 testvideo's, waarvan 49 succesvol werden verwerkt. Bij 2 video's werden geen landingen gedetecteerd.
+
+Voor de landingspositiebepaling werden twee varianten geëvalueerd. In de \emph{2D-modus} worden beide coördinaten op het trampolinebed gebruikt om de zone te bepalen. In de \emph{1D-modus} wordt de landingspositie geprojecteerd op één as (de lengterichting van de trampoline), waarbij enkel de afwijking in die richting wordt beoordeeld. De 1D-variant is specifiek geïntroduceerd om de limitaties van de 2D-variant te illustreren en te evalueren. Dit volgt uit de resultaten van de homografietransformatie (Sectie~\ref{sec:resultaten-homografie}): de diepte-as is gevoeliger voor meetfouten, waardoor de 2D-beoordeling systematisch meer ruis bevat.
+
+
+\section{Hoekpuntdetectie}
+\label{sec:resultaten-hoekpunten}
+
+Het YOLO11n-pose model voor hoekpuntdetectie behaalt op de testset een detectieratio van 97,1\% met een gemiddelde genormaliseerde detectiefout (NERR) van 7,89\%. Dit wijst op een sterke generalisatie over de uiteenlopende camerastandpunten en -afstanden in het wedstrijdmateriaal.
+
+De nauwkeurigheid is echter niet uniform verdeeld over de vier hoekpunten. Figuur~\ref{fig:hoekpunten} illustreert de gemiddelde genormaliseerde fout per hoekpunt. De hoekpunten aan de bovenzijde worden relatief nauwkeurig gedetecteerd (gemiddeld 4,86\%), terwijl het hoekpunt rechtsonder een aanzienlijk grotere afwijking vertoont (13,96\%). Dit is toe te schrijven aan een onbalans in de trainingsdataset: frames van een lege trampoline in rusttoestand komen frequenter voor ten opzichte van landingsmomenten, waardoor het model de dynamische doekvervorming minder goed heeft aangeleerd.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{keypoint_detection_bars.png}
+    \caption{Gemiddelde genormaliseerde detectiefout (NERR) per hoekpunt over de testset.}
+    \label{fig:hoekpunten}
+\end{figure}
+
+De voornaamste zwakte bevindt zich op het moment van landing: wanneer de springer het doek raakt, zakt het trampolineoppervlak plaatselijk in. Dit veroorzaakt een vervorming van het zichtbaar toestel, waardoor het model de hoekpunten soms verschuift naar incorrect gedetecteerde posities. Omdat de volledige homografietransformatie op deze vier punten steunt, werkt elke afwijking hier rechtstreeks door in de berekende landingspositie.
+
+De vergelijking tussen automatische detectie en manuele annotatie bevestigt dit: bij manueel vastgelegde hoekpunten voor statische camera-opstellingen is de landingspositiebepaling duidelijk consistenter. Manuele annotatie fungeert daarmee als bovengrens voor de haalbare nauwkeurigheid van het systeem in de huidige opzet.
+
+\section{Homografietransformatie}
+\label{sec:resultaten-homografie}
+
+De homografietransformatie converteert pixelco{\"o}rdinaten nauwkeurig naar metrische posities op de horizontale as van punten, dit wil zeggen langs de links-rechts as van het camerastandpunt. Bij visuele verificatie (het projecteren van bekende markeringen op de mat terug naar beeldco{\"o}rdinaten) bedraagt de afwijking langs deze as slechts enkele centimeters. De afwijking is te wijten aan de eerder besproken fouten in de hoekpuntdetectie.
+
+De diepte-as (voor-achter vanuit het camerastandpunt) presteert beduidend minder nauwkeurig. Een homografie is gevoelig voor kleine fouten in de referentiepunten, en dit effect is het sterkst langs de as die de diepte in gaat. Door de perspectivische verkorting leidt een kleine fout in de gedetecteerde beeldpositie langs de diepte-as tot een veel grotere metrische afwijking dan langs de horizontale as. Dit vormt de directe motivatie voor de ontwikkeling van de 1D-variant.
+
+
+\section{Landingsmomentdetectie}
+\label{sec:resultaten-landingsmoment}
+
+De binaire classifier onderscheidt de klassen \textit{Landed} en \textit{Not Landed} met hoge betrouwbaarheid. Visuele controle van gedetecteerde landingsframes toont aan dat het model de overgang van vlucht naar contact consistent en correct identificeert, zelfs bij varierende belichting en camerastandpunten.
+
+Een systematisch probleem dat optreedt is het \textit{eerste-frame probleem}: op het moment dat de classifier voor het eerst \textit{Landed} detecteert, is het trampolinedoek al licht ingezakt onder het gewicht van de springer. De springer staat op dit frame dus iets lager dan de werkelijke landingspositie, wat een kleine systematische fout introduceert in de positiebepaling. Dit effect is inherent aan de frame-gebaseerde aanpak en kan niet worden ge{\"e}limineerd zonder hogere framerate.
+
+\section{Landingspositiebepaling}
+\label{sec:resultaten-landingspositie}
+
+De pipeline werd geëvalueerd aan de hand van twee metrieken: de gemiddelde absolute fout (MAE) en de root mean squared error (RMSE) tussen de voorspelde en werkelijke HD-score over 49 testvideo's. Tabel~\ref{tab:hd-resultaten} vat de resultaten samen.
+
+\begin{table}[ht]
+    \centering
+    \caption{Resultaten voor de HD-score (n = 49 video's).}
+    \label{tab:hd-resultaten}
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Modus} & \textbf{MAE} & \textbf{RMSE} \\
+        \midrule
+        2D             & 1,806        & 2,23          \\
+        1D             & 0,649        & 0,805         \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+De 1D-modus halveert de absolute fout ten opzichte van de 2D-modus (MAE 0,649 vs. 1,806), wat bevestigt dat de diepte-as van de homografie de voornaamste bron van afwijking is. In 34 van de 49 video's (69\%) presteerde de 1D-modus beter; in 14 video's (29\%) was 2D nauwkeuriger.
+
+Figuur~\ref{fig:hd-scatter} toont de spreiding van voorspelde HD-scores versus de grondwaarheid voor beide varianten.
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{scatter_hd_2d}
+        \caption*{2D-modus}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{scatter_hd_1d}
+        \caption*{1D-modus}
+    \end{minipage}
+    \caption{Scatter plot van de voorspelde vs.\ werkelijke totale HD-score (links: 2D-modus, rechts: 1D-modus).}
+    \label{fig:hd-scatter}
+\end{figure}
+
+Naast de kwantitatieve resultaten werden twee kwalitatieve problemen waargenomen. Ten eerste interfereren \textit{spotters} die dicht bij de trampoline staan: wanneer de YOLO-detector de begeleider als springer identificeert, genereert SAM-2 een masker van de verkeerde persoon. Dit probleem treedt minder frequent op dan bij de pose estimation-aanpak, omdat de bounding box selectie expliciet de persoon op het trampolinedoek voorrang geeft. Ten tweede beïnvloedt de diepte-as beperking van de homografie ook de landingspositiebepaling: zelfs wanneer het contactpunt correct als pixel wordt geïdentificeerd, vertaalt een onnauwkeurige homografie dit naar een foutieve positie.
+
+Een derde, systematisch effect is de doorwerking van het \textit{eerste-frame probleem} op de verticale positieschatting. Op het moment dat de classifier \textit{Landed} detecteert, is het trampolinedoek al licht ingezakt onder het gewicht van de springer. Het laagste pixel van het SAM-2-masker bevindt zich op dat moment dus niet op de werkelijke landingspositie, maar al iets verder naar beneden op het doek. Dit heeft als gevolg dat de geschatte landingspositie systematisch te ver naar de onderkant van de trampoline wordt ingeschat. Figuur~\ref{fig:landings-te-laag} illustreert dit effect: de gedetecteerde landingspunten clusteren structureel in de onderste helft van het trampolinebed, ook wanneer de springer visueel centraal landt.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.75\linewidth]{landings_te_laag}
+    \caption{Landingsdiagram waarbij de gedetecteerde posities systematisch te laag worden ingeschat door het eerste-frame probleem. De springer landt visueel centraal, maar de punten clusteren in de onderste helft van het doek.}
+    \label{fig:landings-te-laag}
+\end{figure}
+
+\section{ToF-schatting}
+\label{sec:resultaten-tof}
+
+De ToF-schatting via frame-telling leverde over 49 testvideo's een MAE van 5,253 seconden en een RMSE van 6,323 seconden op. De Pearson-correlatiecoëfficiënt bedraagt 0,345, wat wijst op een zwakke lineaire samenhang met de grondwaarheid. De 1D- en 2D-modus leveren identieke ToF-schattingen op, aangezien de ToF uitsluitend op framecounting steunt en onafhankelijk is van de positiebepaling.
+
+De hoge absolute fout is grotendeels toe te schrijven aan de fps-begrenzing in combinatie met een systematische offset. Bij 25 fps bedraagt de onzekerheid per gedetecteerd landingsmoment 40\,ms. Over een volledige reeks van tien sprongen en twintig landingsmomenten loopt de cumulatieve onzekerheid op tot maximaal 800\,ms. Omdat de dataset wedstrijdvideo's bevat met wisselende framerates en omdat de ToF-grondwaarheid de volledige vluchttijd weergeeft inclusief de eerste aanloop en de afsluitende sprong, kan een systematische offset ontstaan die niet per video gecorrigeerd kan worden zonder exacte sprong-voor-sprong annotaties. Figuur~\ref{fig:tof-scatter} illustreert deze spreiding.
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{scatter_tof_2d}
+        \caption*{2D-modus}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{scatter_tof_1d}
+        \caption*{1D-modus}
+    \end{minipage}
+    \caption{Scatter plot van de voorspelde vs.\ werkelijke ToF-score (links: 2D-modus, rechts: 1D-modus).}
+    \label{fig:tof-scatter}
+\end{figure}
+

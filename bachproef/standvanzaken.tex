@@ -128,9 +128,14 @@ De volgende subsecties bespreken de computer vision-technieken die als bouwstene
 
 Naast de methode die gebruikmaakt van het registreren van schaduwen, is het ook mogelijk om camerabeelden vanaf een vast standpunt in de ruimte te kalibreren ten opzichte van een gegeven veld. Het bepalen van een positie van een persoon of object met een camera door middel van een homografie-transformatie is sterk gebaseerd op het bekende Hawk-Eye-systeem, dat wordt gebruikt in zowel professionele tennis- als voetbalwedstrijden.
 
-Recent onderzoek, zoals beschreven door \textcite{Manikanta2025}, illustreert de werking van een geautomatiseerd systeem voor tennisanalyse. In hun werk worden deep learning-modellen (zoals YOLOv5, YOLOv8 en ResNet50) geïntegreerd om spelers, de bal en de keypoints van het veld te detecteren. Door middel van de gedetecteerde keypoints kan een homografie-matrix worden opgesteld. Deze matrix maakt het mogelijk om de cameraprojectie te transformeren naar een gestandaardiseerd bovenaanzicht, wat precieze positiebepaling van acties of atleten mogelijk maakt, onafhankelijk van het perspectief van de camera.
+Recent onderzoek, zoals beschreven door \textcite{Manikanta2025}, illustreert de werking van een geautomatiseerd systeem voor tennisanalyse. In hun werk worden deep learning-modellen (zoals YOLOv5, YOLOv8 en ResNet50) geïntegreerd om spelers, de bal en de keypoints van het veld te detecteren. Door middel van de gedetecteerde keypoints kan een homografie-matrix worden opgesteld. Deze matrix maakt het mogelijk om de cameraprojectie te transformeren naar een gestandaardiseerd bovenaanzicht, wat precieze positiebepaling van acties of atleten mogelijk maakt, onafhankelijk van het perspectief van de camera. Figuur~\ref{fig:tennis-keypoints-minicourt} illustreert dit principe. De gedetecteerde keypoints van het veld worden gebruikt om de spelersposities te projecteren op een vereenvoudigde 2D-kaart.
 
-% TODO: Figuur toevoegen van tennisveld met keypoints en homografie-transformatie
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{tennis_keypoints_minicourt}
+    \caption{Detectie van veldkeypoints en homografie-transformatie naar een 2D-minikaart in een tennisanalysesysteem \autocite{Kosolapov2024}.}
+    \label{fig:tennis-keypoints-minicourt}
+\end{figure}
 
 Concreet betekent dit dat elk punt in het camerabeeld, uitgedrukt in pixels, eenduidig kan worden omgezet naar een punt in een tweedimensionaal vlak met correcte verhoudingen, op voorwaarde dat de vier referentiepunten nauwkeurig bekend zijn.
 
@@ -198,13 +203,32 @@ Voor dit onderzoek was de initiële aanpak om het middelpunt tussen de twee enke
 
 Als alternatief voor keypointdetectie wordt in dit onderzoek gebruikgemaakt van pixel-niveau segmentatie. In plaats van een bounding box rondom de gymnast te berekenen, produceert een segmentatiemodel een binair masker dat exact aangeeft welke pixels tot het object behoren.
 
-% TODO: Figuur voorbeeld segmentatie met uitleg toevoegen
+Segment Anything Model 2 (\textit{SAM-2}) \autocite{Ravi2024} is een algemeen segmentatiemodel ontwikkeld door Meta, ontworpen voor zowel statische beelden als videosequenties. Wat SAM-2 kenmerkt is de prompt-gestuurde aanpak. Het model accepteert een eenvoudige invoer, zoals een bounding box of een pixelpunt, en genereert op basis daarvan een nauwkeurig segmentatiemasker zonder specifieke finetuning. Figuur~\ref{fig:sam2-prompt} illustreert hoe een combinatie van een bounding box en positieve of negatieve punten als prompt kan worden meegegeven om het gewenste object te segmenteren.
 
-Segment Anything Model 2 (\textit{SAM-2}) \autocite{Ravi2024} is een algemeen segmentatiemodel ontwikkeld door Meta, ontworpen voor zowel statische beelden als videosequenties. Wat SAM-2 kenmerkt is de prompt-gestuurde aanpak. Het model accepteert een eenvoudige invoer, zoals een bounding box of een pixelpunt, en genereert op basis daarvan een nauwkeurig segmentatiemasker zonder specifieke finetuning.
-
-% TODO: Figuur prompt-based segmentatie toevoegen
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.85\textwidth]{sam_prompt_based.png}
+    \caption[Prompt-gestuurde segmentatie met SAM-2]{Voorbeeld van prompt-gestuurde segmentatie met SAM-2. Een bounding box en optionele positieve of negatieve punten worden als invoer meegegeven. SAM-2 genereert op basis hiervan een pixelnauwkeurig segmentatiemasker van het gewenste object \autocite{Ravi2024}.}
+    \label{fig:sam2-prompt}
+\end{figure}
 
 Dit biedt een belangrijk voordeel ten opzichte van pose estimation in de context van trampolinespringen. Doordat de laagste pixel van het segmentatiemasker direct wordt geëxtraheerd als voetcontactpunt, is er geen afhankelijkheid van expliciete keypointvoorspellingen. Dit maakt de aanpak robuuster voor situaties met veel motion blur. In de voorgestelde pipeline levert de persoondetectie via YOLOv11n een bounding box die als prompt aan SAM-2-tiny wordt meegegeven. Het laagste punt van het resulterende masker dient vervolgens als landingspixel voor de homografietransformatie. De gekozen variant SAM-2-tiny biedt een gunstige balans tussen segmentatienauwkeurigheid en berekentijd, wat relevant is voor toepassingen waarbij meerdere frames snel na elkaar moeten worden verwerkt.
+
+\subsection{Optical Flow en de Farneback-methode}
+\label{subsec:farneback}
+
+Optical flow beschrijft de schijnbare beweging van pixels tussen twee opeenvolgende videoframes. Het basisidee is intuïtief: als een object verschuift, verschuift ook het bijbehorende patroon van lichtintensiteiten in het beeld. Figuur~\ref{fig:optical-flow-concept} illustreert dit principe: een beeldkenmerk op positie $(x, y)$ op tijdstip $t$ is terug te vinden op positie $(x + \mathrm{d}x,\, y + \mathrm{d}y)$ op tijdstip $t + \mathrm{d}t$.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.6\linewidth]{optical_flow_intuitief.png}
+    \caption[Basisprincipe van optical flow]{Het basisprincipe van optical flow: een beeldkenmerk op positie $(x,y)$ op tijdstip $t$ wordt teruggevonden op positie $(x+\mathrm{d}x,\, y+\mathrm{d}y)$ op tijdstip $t+\mathrm{d}t$.}
+    \label{fig:optical-flow-concept}
+\end{figure}
+
+Traditionele methoden zoals Lucas-Kanade gaan ervan uit dat de beweging constant is binnen een kleine omgeving van pixels: alle naburige pixels bewegen gelijk. Wiskundig is dit vergelijkbaar met het benaderen van de lokale beeldstructuur als een plat vlak. Dit werkt voor kleine, trage verplaatsingen, maar schiet tekort bij complexe of rijke beeldstructuren.
+
+\textcite{Farneback2003} introduceert een fundamenteel andere benadering. In plaats van de lokale omgeving van elk pixel als een vlak te beschouwen, modelleert hij die omgeving als een gekromd oppervlak. Stel je voor dat de helderheidswaarden rondom een pixel een driedimensionaal berglandschap vormen: klassieke methoden leggen daar een plat vlak overheen, terwijl Farneback een gebogen vorm toepast die de lokale structuur veel nauwkeuriger beschrijft. Door te vergelijken hoe dit gekromde oppervlak verschuift tussen twee opeenvolgende frames, berekent het algoritme voor elke pixel afzonderlijk een verplaatsingsvector. Het resultaat is een \textit{dense flow field} (hoge dichtheid): een volledig beeld van beweging, pixel voor pixel, in tegenstelling tot sparse (lage dichtheid) methoden die enkel voor een selectie van kenmerkpunten werken. Dit maakt Farneback geschikt om subtiele, gedistribueerde vervormingen in een beeld te detecteren. De methode is beschikbaar als \texttt{cv2.calcOpticalFlowFarneback()} in de OpenCV-bibliotheek \autocite{opencv_library}.
 
 \subsection{Datasets}
 \label{sec:datasets}

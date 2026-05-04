@@ -1,28 +1,7 @@
 % !TeX root = CoeneDylanBP.tex
-%%=============================================================================
+%%============================================================================
 %% Methodologie
 %%=============================================================================
-
-%% In dit hoofstuk geef je een korte toelichting over hoe je te werk bent
-%% gegaan. Verdeel je onderzoek in grote fasen, en licht in elke fase toe wat
-%% de doelstelling was, welke deliverables daar uit gekomen zijn, en welke
-%% onderzoeksmethoden je daarbij toegepast hebt. Verantwoord waarom je
-%% op deze manier te werk gegaan bent.
-%%
-%% Voorbeelden van zulke fasen zijn: literatuurstudie, opstellen van een
-%% requirements-analyse, opstellen long-list (bij vergelijkende studie),
-%% selectie van geschikte tools (bij vergelijkende studie, "short-list"),
-%% opzetten testopstelling/PoC, uitvoeren testen en verzamelen
-%% van resultaten, analyse van resultaten, ...
-%%
-%% !!!!! LET OP !!!!!
-%%
-%% Het is uitdrukkelijk NIET de bedoeling dat je het grootste deel van de corpus
-%% van je bachelorproef in dit hoofstuk verwerkt! Dit hoofdstuk is eerder een
-%% kort overzicht van je plan van aanpak.
-%%
-%% Maak voor elke fase (behalve het literatuuronderzoek) een NIEUW HOOFDSTUK aan
-%% en geef het een gepaste titel.
 
 \chapter{\IfLanguageName{dutch}{Methodologie}{Methodology}}%
 \label{ch:methodologie}
@@ -30,11 +9,19 @@
 \section{Overzicht en werkwijze}
 \label{sec:methodologie-overzicht}
 
-Het onderzoek volgt een iteratieve, experimenteel geori{\"e}nteerde aanpak. Gegeven de verkennende aard van dit project, waarbij een nieuw meetsysteem wordt ontwikkeld zonder bestaande standaardmethoden, is een klassieke waterval-methodologie ongeschikt. Bij een waterval-methode liggen alle stappen vooraf vast, terwijl dit project vraagt om flexibiliteit. In plaats daarvan worden opeenvolgende experimentele fasen uitgevoerd. De bevindingen en knelpunten uit elke fase worden direct gebruikt om het ontwerp en de strategie van de volgende fase aan te scherpen.
+Het huidig onderzoek volgt een iteratieve, experimenteel geori{\"e}nteerde aanpak die gericht is op het ontwikkelen van een innovatieve computervisie-oplossing. Gegeven de verkennende aard van dit project, waarbij een nieuw meetsysteem wordt ontwikkeld zonder bestaande standaardmethoden of richtlijnen, is een klassieke waterval-methodologie ongeschikt. Bij een waterval-methode liggen alle stappen vooraf vast en worden ze lineair doorlopen, terwijl dit project juist vraagt om flexibiliteit om vlot te kunnen adapteren aan nieuwe inzichten. In plaats daarvan worden opeenvolgende experimentele fasen uitgevoerd, waarbij elke fase leidt tot nieuwe ontdekkingen. De bevindingen en knelpunten uit elke fase worden direct gebruikt om het ontwerp en de strategie van de volgende fase aan te scherpen.
 
-De uitwerking van het systeem verloopt in opeenvolgende fasen, die hierna worden toegelicht.
+De uitwerking van het systeem verloopt in opeenvolgende fasen. Deze fasen worden hieronder in detail beschreven, waarbij de methodologische keuzes en de gedachtegang erachter worden toegelicht. De fasen zijn als volgt gestructureerd:
 
-%----------------------------------------------------------------------
+\begin{itemize}
+    \item \textbf{Initi{\"e}le verkenning}: een eerste test om de haalbaarheid van het idee te verkennen en de beperkingen van een onderaanzicht te identificeren.
+    \item \textbf{Dataset en dataverzameling}: de selectie van een geschikte dataset en de voorbereiding van gelabelde beelden voor training en evaluatie.
+    \item \textbf{Hoekpuntdetectie}: het ontwikkelen van een methode om de hoekpunten van de trampoline automatisch te detecteren, en een manuele annotatieoptie als alternatief voor statische camerastandpunten.
+    \item \textbf{Homografietransformatie}: het toepassen van een homografietransformatie om pixelco{\"o}rdinaten om te zetten naar metrische co{\"o}rdinaten op het trampolinebed.
+    \item \textbf{Landingsmomentdetectie}: het identificeren van het exacte frame waarop de springer in contact komt met het doek, via zowel een snelheidsgebaseerde aanpak als een binaire classifier.
+    \item \textbf{Landingspositiebepaling}: het bepalen van de landingspositie op basis van verschillende benaderingen, waaronder keypointdetectie, lineaire interpolatie, en unsupervised objectsegmentatie.
+    \item \textbf{ToF-schatting}: het berekenen van de Time of Flight (ToF) op basis van de gedetecteerde landingsmomenten en de framerate van de video.
+\end{itemize}
 
 \section{Initi{\"e}le verkenning}
 \label{sec:methodologie-verkenning}
@@ -43,8 +30,6 @@ Voorafgaand aan de formele onderzoeksfasen werd een eerste exploratieve test uit
 
 Ondanks de brede kijkhoek van de fisheye-lens kon de volledige oppervlakte van de trampoline niet in beeld worden gebracht. Hoewel het grootste deel van het vlak zichtbaar was, bleven bepaalde randzones en de uiterste hoeken buiten het bereik van de camera. Op de opgenomen beelden werd vervolgens het \textit{Depth Anything v3}-model toegepast. Dit is een modern en krachtig AI-model dat specifiek is ontworpen voor monoculaire diepteschatting: het schatten van afstand op basis van een enkel camerabeeld. De doelstelling was om te onderzoeken of het model de driedimensionale vervorming van het trampolinedoek tijdens een sprong accuraat kon vastleggen als indicatie voor de landingspositie.
 
-De resultaten van deze verkenning waren echter onvoldoende om op voort te bouwen. Aangezien het trampolinedoek vanuit dit perspectief semi-transparant is en het licht van boven doorlaat, biedt het oppervlak nauwelijks textuur of visuele referentiepunten voor een dieptemodel. Hierdoor kon het algoritme geen betrouwbare of consistente dieptekaart genereren. Bovendien vervormde het doek op het dieptepunt van de landing zo sterk en kwam het zo dicht bij de lens, dat de camera het globaal overzicht van de trampoline verloor. Dit maakte een nauwkeurige voorspelling van de horizontale verplaatsing erg lastig. Figuur~\ref{fig:diepteschatting-verkenning} toont een duidelijke vergelijking tussen een origineel camerabeeld en de bijbehorende, onsamenhangende dieptemap. Deze bevindingen leidden tot de beslissing om de aanpak onder de trampoline te verlaten en te kiezen voor een methode op basis van homografie via een schuin zijdelings aanzicht.
-
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\linewidth]{depth_anything_test}
@@ -52,16 +37,24 @@ De resultaten van deze verkenning waren echter onvoldoende om op voort te bouwen
     \label{fig:diepteschatting-verkenning}
 \end{figure}
 
-%----------------------------------------------------------------------
+De resultaten van deze verkenning waren echter onvoldoende om op voort te bouwen. Aangezien het trampolinedoek vanuit dit perspectief semi-transparant is en het licht van boven doorlaat, biedt het oppervlak nauwelijks textuur of visuele referentiepunten voor een dieptemodel. Hierdoor kon het algoritme geen betrouwbare of consistente dieptemap genereren. Bovendien vervormde het doek op het dieptepunt van de landing zo sterk en kwam het zo dicht bij de lens, dat de camera het globaal overzicht van de trampoline verloor. Dit maakte een nauwkeurige voorspelling van de horizontale verplaatsing erg lastig. Figuur~\ref{fig:diepteschatting-verkenning} toont een duidelijke vergelijking tussen een origineel camerabeeld en de bijbehorende incorrecte dieptemap. Deze bevindingen leidden tot de beslissing om de aanpak met de camera onder de trampoline te verlaten en te kiezen voor een methode op basis van homografie via een schuin zijdelings aanzicht.
+
 
 \section{Dataset en dataverzameling}
 \label{sec:dataset}
 
-Omdat de initi{\"e}le opzet met een eigen cameraopstelling werd verlaten, werd overgeschakeld naar een aanpak op basis van bestaande wedstrijdbeelden. De dataset van \textcite{Lin2025}, die videomateriaal van competitieve trampolinesprongen bevat, werd gebruikt als primaire databron voor het trainen en evalueren van de modellen in de pipeline.
+Omdat de initi{\"e}le opzet met een eigen cameraopstelling werd verlaten, werd overgeschakeld naar een aanpak op basis van bestaande wedstrijdbeelden. De zeer recent uitgebrachte dataset van \textcite{Lin2025}, die videomateriaal van competitieve trampolinesprongen bevat, werd gebruikt als primaire databron voor het trainen en evalueren van de modellen in de pipeline.
 
-Deze dataset bestaat uit beelden van de Olympische Spelen en andere internationale wedstrijden, waarbij de camera niet volledig gefixeerd was maar meebewoog met de actie, vergelijkbaar met hoe een smartphone-applicatie in de praktijk zou worden ingezet.
+Deze dataset bestaat uit beelden van de Olympische Spelen en andere internationale wedstrijden, waarbij de camera niet volledig gefixeerd was maar meebewoog met de actie, vergelijkbaar met hoe een smartphone-applicatie in de praktijk zou worden ingezet. Dit levert dynamische en realistische beelden op.
 
-Een direct gevolg van het werken met opgenomen beelden is dat er geen controle bestond over de camerahoeken, instellingen of de positie ten opzichte van de trampoline.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.95\textwidth]{dataset_samples_grid.png}
+    \caption[Voorbeeldframes uit de dataset]{Vier voorbeeldframes uit de dataset van \textcite{Lin2025}. De variatie in camerahoek, belichting en achtergrond illustreert de diversiteit van het beschikbare wedstrijdmateriaal.}
+    \label{fig:dataset-voorbeelden}
+\end{figure}
+
+Het gebruik van deze dataset brengt ook beperkingen met zich mee. Een direct gevolg van het werken met opgenomen beelden is dat er geen controle bestond over de camerahoeken, instellingen of de positie ten opzichte van de trampoline.
 
 Uit de dataset werden gelabelde afbeeldingen geselecteerd voor twee afzonderlijke trainingsdoeleinden:
 \begin{itemize}
@@ -74,30 +67,41 @@ Uit de dataset werden gelabelde afbeeldingen geselecteerd voor twee afzonderlijk
 \section{Hoekpuntdetectie}
 \label{sec:trampolinedetectie}
 
-Voordat enige positiemeting mogelijk is, moeten de vier hoekpunten van het trampolinebed per frame gelokaliseerd worden. Deze hoekpunten vormen de invoer voor de homografietransformatie en bepalen daarmee de nauwkeurigheid van alle volgende stappen.
+Voordat enige vorm van positiemeting mogelijk is, is het essentieel dat de vier hoekpunten van het trampolinebed per frame nauwkeurig worden gelokaliseerd. Deze specifieke hoekpunten vormen de invoer voor de homografietransformatie en spelen een bepalende rol in de nauwkeurigheid van alle volgende stappen in het proces. Het correct identificeren van deze punten is van groot belang voor de gehele precisie van de finale metingen.
 
 \subsection{YOLO-Pose}
 \label{subsec:hoekpuntdetectie}
 
 Voor de automatische localisatie van de hoekpunten werd een YOLO11n-pose model ingezet \autocite{Jocher_Ultralytics_YOLO_2023}. Dit model is toegelicht in Sectie~\ref{subsec:yolo} van de literatuurstudie. De \textit{pose}-variant van YOLO11 laat toe om naast een bounding box ook een vaste set keypoints te voorspellen. In dit geval werd het model gebruikt om de vier keypoints die overeenkomen met de vier hoeken van het trampolinebed te detecteren.
 
-Het model werd getraind op een dataset van enkele honderden handmatig geannoteerde trampolineafbeeldingen, geselecteerd uit de dataset beschreven in Sectie~\ref{sec:dataset}. Dankzij de uiteenlopende camerahoeken en -afstanden in het wedstrijdmateriaal was het model na training in staat om de hoekpunten met een redelijke accuraatheid te detecteren ondanks de bewegende camera en wisselende omgevingen.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.85\textwidth]{keypoint_detection_figure.png}
+    \caption[Hoekpuntdetectie op een videoframe]{Voorbeeld van de hoekpuntdetectie op een frame uit de dataset. De vier hoeken van het trampolinebed worden gedetecteerd door het YOLO11n-pose model (groene cirkels). De blauwe rechthoek toont de bounding box van de trampoline.}
+    \label{fig:hoekpuntdetectie-frame}
+\end{figure}
 
-De nauwkeurigheid van het model was echter niet perfect. Bij frames waarbij het trampolinedoek sterk doorzakt, wat typisch het geval is op het moment van landing, vertoonden de gedetecteerde hoekpunten soms een zichtbare verschuiving ten opzichte van de werkelijke hoekposities. Omdat de volledige homografietransformatie op deze vier punten steunt, vertaalt elke fout in de hoekpuntdetectie zich rechtstreeks in een fout in de berekende landingspositie. Dit vormt de belangrijkste nauwkeurigheidsbeperking van de automatische aanpak.
+Het model werd getraind op een dataset van 312 handmatig geannoteerde trampolineafbeeldingen, opgesplitst in een trainingsset (219), validatieset (54) en testset (39), geselecteerd uit de dataset beschreven in Sectie~\ref{sec:dataset}. Dankzij de uiteenlopende cameraperspectieven en omgevingen in het videomateriaal was het model in staat om de hoekpunten betrouwbaar te lokaliseren ondanks de relatief kleine dataset en wisselende omgevingen. Op de testset behaalde het model een detectieratio van 97,1\%, met een gemiddelde genormaliseerde detectiefout van 7,89\%. Deze metriek drukt de gemiddelde pixelafwijking uit als fractie van de diagonale lengte van de bounding box, waardoor deze evaluatie onafhankelijk is van de beeldresolutie.
+
+De nauwkeurigheid was echter niet uniform verdeeld. Terwijl de hoekpunten aan de bovenzijde relatief nauwkeurig werden gedetecteerd (gemiddeld 4,86\%), vertoonde het hoekpunt rechtsonder een aanzienlijk grotere afwijking van 13,96\%. Vooral bij frames waarbij het trampolinedoek sterk doorzakt, wat typisch het geval is op het moment van landing, vertoonden de gedetecteerde punten een zichtbare verschuiving ten opzichte van de werkelijke posities.
+
+Deze verminderde precisie tijdens de landing kan worden toegeschreven aan een onbalans in de trainingsdataset: het aantal frames van een lege trampoline in rusttoestand is aanzienlijk groter dan het aantal frames van een landingsmoment. Door deze ondervertegenwoordiging leert het model het beeld van een statisch trampolinebed beter herkennen dan de dynamische vervorming tijdens een landing. Omdat de volledige homografietransformatie op deze vier punten steunt, vertaalt elke fout in de hoekpuntdetectie zich rechtstreeks in een afwijking in de berekende landingspositie. Dit vormt momenteel de belangrijkste nauwkeurigheidsbeperking van de automatische aanpak.
 
 \subsection{Manuele annotatie}
 \label{subsec:manuele-annotatie}
 
-Als alternatief voor de automatische detectie werd een optie voorzien om de vier hoekpunten handmatig aan te duiden in het eerste frame van een videosegment. Dit sluit aan bij een scenario waarbij de cameraopstelling voor een bepaalde opname vast blijft en de hoekpunten slechts eenmalig bepaald hoeven te worden.
+Als alternatief voor de automatische detectie werd een optie voorzien om de vier hoekpunten handmatig aan te duiden in het eerste frame van een videosegment. Dit sluit aan bij een scenario waarbij de cameraopstelling voor een bepaalde opname vast blijft en de hoekpunten slechts eenmalig bepaald moeten worden.
 
 Manuele annotatie elimineert de detectiefout van het model volledig, waardoor de homografiematrix een stuk nauwkeuriger wordt. In de experimenten leidde dit tot een duidelijk betere landingspositiebepaling voor statische scenario's in vergelijking met de volledig geautomatiseerde aanpak. Het nadeel is uiteraard de schaalbaarheid: bij grote hoeveelheden video, of wanneer de camera doorheen de opname beweegt, is handmatig labelen niet praktisch haalbaar. Voor dit onderzoek fungeerde manuele annotatie als een ideaalscenario voor de haalbare nauwkeurigheid van de homografie.
 
 \section{Homografietransformatie}
 \label{sec:homografie}
 
-De pixelco{\"o}rdinaten $(u, v)$ uit het beeldvlak worden via een basistransformatie geprojecteerd naar fysieke co{\"o}rdinaten $(x, y)$ op het trampolinedoek, uitgedrukt in meters. Omdat een camera de trampoline meestal onder een hoek bekijkt, lijkt de rechthoekige mat op beeld vaak op een trapezium. Aangezien de vorm en afmetingen van een wedstrijdtrampoline gestandaardiseerd zijn (zie Sectie~\ref{subsec:trampolinetoestel}), kan er gebruik worden gemaakt van een \textit{planaire homografietransformatie} om dit perspectief te corrigeren.
+De pixelco{\"o}rdinaten $(u, v)$ uit het beeldvlak worden via een basistransformatie geprojecteerd naar fysieke co{\"o}rdinaten $(x, y)$ op het trampolinedoek, uitgedrukt in meters. Omdat een camera de trampoline meestal onder een bepaalde hoek bekijkt, lijkt de rechthoekige mat op beeld vaak op een trapezium. Aangezien de vorm en afmetingen van een wedstrijdtrampoline gestandaardiseerd zijn (zie Sectie~\ref{subsec:trampolinetoestel}), kan er gebruik worden gemaakt van een \textit{planaire homografietransformatie} om dit perspectief te corrigeren en een nauwkeuriger representatie te verkrijgen.
 
 Een homografie $H$ is een $3 \times 3$ matrix die de wiskundige relatie beschrijft tussen twee platte vlakken: het camerabeeld en het werkelijke trampolinedoek. Deze matrix dient als een brug die elke pixel in de video koppelt aan een specifieke plek op de mat.
+
+% TODO: Figuur toevoegen homography_transformation of homopgrahpy_perspective_correction
 
 De transformatie wordt bepaald aan de hand van vier corresponderende puntenparen:
 \begin{enumerate}
@@ -111,105 +115,126 @@ Met behulp van functies zoals \texttt{cv2.getPerspectiveTransform} of \texttt{cv
     \begin{pmatrix} x' \\ y' \\ w \end{pmatrix} = H \cdot \begin{pmatrix} u \\ v \\ 1 \end{pmatrix}, \quad (x, y) = \left(\frac{x'}{w},\, \frac{y'}{w}\right)
 \]
 
-Hierbij zorgt de factor $w$ voor de schaling die nodig is om het perspectief-effect volledig te neutraliseren. De nauwkeurigheid van de homografie wordt tot slot ge{\"e}valueerd door visuele meetpunten of markeringen op bekende posities op de mat te projecteren. De berekende afstand wordt dan vergeleken met de werkelijk gemeten afstand. De verwachte maximale afwijking bedraagt slechts enkele centimeters. Deze kleine foutmarge is afhankelijk van de resolutie van de camera en hoe precies het model de hoekpunten van de mat kan bepalen.
+Hierbij zorgt de factor $w$ voor de schaling die nodig is om het perspectief-effect volledig te neutraliseren en ervoor te zorgen dat de projectie betrouwbaar is. De nauwkeurigheid van de homografie wordt tot slot ge{\"e}valueerd door visuele meetpunten of markeringen op bekende posities op de mat te projecteren. De berekende afstand wordt dan vergeleken met de werkelijk gemeten afstand. De verwachte maximale afwijking bedraagt slechts enkele centimeters. Deze kleine foutmarge is afhankelijk van de resolutie van de camera en hoe precies het model de hoekpunten van de mat kan bepalen.
 
 % TODO: Figuur die de homografie toont + plot van de trampoline projectie
 
 \section{Landingsmomentdetectie}
 \label{sec:landingsmoment}
 
-Om de landingspositie te kunnen bepalen, moet eerst het exacte frame worden ge{\"i}dentificeerd waarop de springer in aanraking komt met het doek. Deze stap is cruciaal, gezien zowel een te vroeg als een te laat gedetecteerd landingsmoment leidt tot een foutieve positieschatting.
+Om de landingspositie nauwkeurig te kunnen bepalen, is het essentieel dat eerst het exacte frame wordt ge{\"i}dentificeerd waarop de springer in aanraking komt met het doek. Deze stap is van cruciaal belang, aangezien zowel een te vroeg als een te laat gedetecteerd landingsmoment leidt tot een foutieve positieschatting, wat de algehele prestaties van het model negatief kan be{\"i}nvloeden.
 
 \subsection{Snelheidsgebaseerde detectie}
 \label{subsec:landingsmoment-pose}
 
-De eerste strategie om het landingsmoment te bepalen was gebaseerd op de verticale snelheid van de springer doorheen de sprong. Via een Pose Estimation model werd het zwaartepunt van de springer per frame bepaald. Wanneer de verticale component van dat zwaartepunt abrupt afnam, een teken dat de opwaartse beweging stopt, zou dat het moment van doekcontact aangeven.
+De eerste strategie om het landingsmoment te bepalen was gebaseerd op de verticale snelheid van de springer doorheen de sprong. Via een Pose Estimation model werd het zwaartepunt van de springer per frame bepaald. Wanneer de verticale component van dat zwaartepunt afnam, een teken dat de neerwaartse beweging vermindert, zou dat het moment van doekcontact aangeven.
 
-In de praktijk bleek deze aanpak echter onbetrouwbaar. YOLO Pose Estimation modellen genereren keypoint-predicties op basis van individuele frames, zonder gebruik te maken van informatie uit opeenvolgende frames (temporele informatie). Bij de snelle bewegingen die kenmerkend zijn voor trampolinespringen veroorzaakt de hoge snelheid van de springer op het moment vlak voor landing een sterke bewegingsonscherpte (\textit{motion blur}) in het beeld. Precies in deze kritieke frames vielen de keypoint-predities frequent weg of werden ze onnauwkeurig, waardoor het snelheidsignaal te onbetrouwbaar was om als detectiemechanisme te dienen.
+% TODO: Figuur genereren van een plot van verticale snelheid doorheen sprongen
+
+In de praktijk bleek deze aanpak echter onbetrouwbaar. YOLO Pose Estimation modellen genereren keypoint-predicties op basis van individuele frames, zonder gebruik te maken van informatie uit opeenvolgende frames (temporele informatie). Bij de snelle bewegingen die kenmerkend zijn voor trampolinespringen veroorzaakt de hoge snelheid van de springer op het moment vlak voor landing een sterke motion blur in het beeld. Precies in deze kritieke frames vielen de keypoint-predities frequent weg of werden ze onnauwkeurig, waardoor het snelheidsignaal te onbetrouwbaar was om als detectiemechanisme te dienen.
+
+Bovendien was het binnen deze context niet vanzelfsprekend om consistent de correcte persoon te detecteren en te volgen. De aanwezigheid van een \textit{spotter} (begeleider die vlakbij de trampoline staan om de springer op te vangen bij een val) naast de trampoline en publiek op de achtergrond zorgde voor extra complexiteit, waardoor het model moeite had om de springer te onderscheiden van andere aanwezigen in het beeld. Dit leidde tot frequente verwarring en foutieve detecties, wat de betrouwbaarheid van de snelheidsgebaseerde aanpak verder verminderde.
 
 \subsection{Binaire classifier}
 \label{subsec:landingsmoment-classifier}
 
-Omdat het snelheidsgebaseerde systeem te sterk afhankelijk was van betrouwbare keypoints, werd overgestapt op een aanpak die het landingsmoment direct op beeldniveau detecteert. Hiervoor werd een YOLO11n classificatiemodel \autocite{Jocher_Ultralytics_YOLO_2023} getraind als binaire classifier met twee klassen: \textit{Landed} en \textit{Not Landed}.
+Omdat het snelheidsgebaseerde systeem te sterk afhankelijk was van betrouwbare keypoints, werd overgestapt op een aanpak die het landingsmoment direct op beeldniveau detecteert. Hiervoor werd een YOLOv11n classificatiemodel \autocite{Jocher_Ultralytics_YOLO_2023} getraind als binaire classifier: een model dat elk frame simpelweg indeelt in één van twee mogelijke categorieën, namelijk \textit{Landed} of \textit{Not Landed}.
 
-Als invoer ontvangt de classifier per frame een uitsnede van het trampolinebed, bepaald als bijproduct van de hoekpuntendetectie uit Sectie~\ref{sec:trampolinedetectie}. Door de invoer te beperken tot de trampoline-regio wordt de achtergrond en de omgeving van het beeld buiten beschouwing gelaten, wat de focus van het model op de relevante informatie vergroot. Het model leert zo om direct uit het visuele patroon van het doek, de aanwezigheid van een springer, de vervorming van het doek en de schaduwpatronen te bepalen of er contact is.
+Als invoer ontvangt de classifier per frame een uitsnede van het trampolinebed, bepaald als bijproduct van de hoekpuntendetectie uit Sectie~\ref{sec:trampolinedetectie}. Door de invoer te beperken tot de trampoline-regio wordt de achtergrond en de omgeving van het beeld buiten beschouwing gelaten, wat de focus van het model op de relevante informatie vergroot. Het model leert zo om direct uit het visuele patroon van het doek, de aanwezigheid van een springer, de vervorming van het doek en de schaduwpatronen te bepalen of er contact is. Figuur~\ref{fig:classifier-voorbeelden} toont voorbeelden van beide klassen zoals het model ze ontvangt.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{classifier_not_landed.png}
+    \caption*{Not Landed}
+    \vspace{0.5em}
+    \includegraphics[width=\linewidth]{classifier_landed.png}
+    \caption*{Landed}
+    \caption[Voorbeelden van de twee klassen van de binaire classifier]{Voorbeelden van de twee klassen waarop de binaire classifier is getraind. Boven: uitsneden geclassificeerd als \textit{Not Landed}, waarbij de springer zich in de lucht bevindt of het doek niet raakt. Onder: uitsneden geclassificeerd als \textit{Landed}, waarbij de springer duidelijk in contact is met het doek. De weergegeven confidentiescores zijn de uitvoer van het YOLO11n-cls model.}
+    \label{fig:classifier-voorbeelden}
+\end{figure}
 
 Het eerste opeenvolgende frame waarop de classifier de klasse \textit{Landed} toekent, wordt gebruikt als het landingsframe. Dit frame dient vervolgens als invoer voor de landingspositiebepaling (Sectie~\ref{sec:landingspositie}) en als ankerpunt voor de ToF-berekening (Sectie~\ref{sec:tof}).
 
-Ondanks de relatief beperkte omvang van de trainingsset presteerde het model opvallend goed. De eenvoud van de classificatietaak, het onderscheid tussen een leeg doek en een doek met een springer, maakt het probleem voldoende afgebakend om met weinig data goed te generaliseren.
+De trainingsset bevatte 1~011 afbeeldingen (192 \textit{Landed}, 819 \textit{Not Landed}), aangevuld met een validatieset van 254 afbeeldingen (49~/ 205). De klassen zijn ongebalanceerd: een volledige sprong bevat per definitie meer luchtfases dan contactmomenten, wat de verhouding van ongeveer 1 op 4 verklaart. Om te vermijden dat het model de minderheidsklasse negeert, werd tijdens de training gebruikgemaakt van een gewogen verliesfunctie (\textit{loss function}), waarbij de klasse \textit{Landed} een hoger gewicht kreeg omgekeerd evenredig aan zijn frequentie.
 
-%----------------------------------------------------------------------
+Een verliesfunctie in machine learning is een maatstaf voor de fouten die het model maakt tijdens het leren. Tijdens het trainen wordt het model geoptimaliseerd door deze fout stapsgewijs te verkleinen.
+
+Ondanks de beperkte omvang presteerde het model opvallend goed. De eenvoud van de classificatietaak, het onderscheid tussen een leeg doek en een doek met een springer zoals te zien in Figuur~\ref{fig:classifier-voorbeelden}, maakt het probleem voldoende afgebakend om met weinig data goed te generaliseren.
 
 \section{Landingspositiebepaling}
 \label{sec:landingspositie}
 
-De landingspositie van de springer wordt bepaald op het gedetecteerde landingsframe (zie Sectie~\ref{sec:landingsmoment}). Het bepalen van een betrouwbaar referentiepunt voor deze positie bleek iteratief: meerdere aanpakken werden achtereenvolgens onderzocht en verfijnd.
+De landingspositie van de springer wordt bepaald op het gedetecteerde landingsframe (zie Sectie~\ref{sec:landingsmoment}). Het bepalen van een betrouwbaar referentiepunt voor deze positie verliep iteratief: achtereenvolgens werden vier benaderingen onderzocht en verfijnd, elk voortbouwend op de tekortkomingen van de vorige.
 
 \subsection{Poging 1: YOLO-Pose}
 \label{subsec:landingspositie-yolo}
 
-De eerste aanpak maakte gebruik van een YOLO11l-pose model \autocite{Jocher_Ultralytics_YOLO_2023} om de lichaamspositie van de springer te bepalen. In het COCO-keypointformaat zijn de enkels gedefinieerd als keypoints 15 (linkerenkel) en 16 (rechterenkel). Het rekenkundig middelpunt tussen deze twee keypoints werd gebruikt als referentiepunt voor de landingspositie, omdat dit beter aansluit bij het werkelijke contactpunt van de voeten dan het zwaartepunt van de volledige bounding box.
+De eerste aanpak maakte gebruik van een YOLOv11l-pose model \autocite{Jocher_Ultralytics_YOLO_2023} om de lichaamspositie van de springer te bepalen. De grotere variant werd verkozen boven de lichtere varianten om een hogere keypointnauwkeurigheid te bekomen. Het model ontving het volledige cameraframe als invoer. In het COCO-keypointformaat zijn de enkels gedefinieerd als keypoints 15 (linkerenkel) en 16 (rechterenkel). Het rekenkundig gemiddelde van deze twee pixelco{\"o}rdinaten werd gebruikt als referentiepunt voor de landingspositie, omdat dit beter aansluit bij het werkelijke contactpunt van de voeten dan het zwaartepunt van de volledige bounding box. Dit gemiddelde werd vervolgens via de homografietransformatie omgezet naar een metrische positie op het doek van de trampoline.
 
-In de praktijk deden zich echter twee fundamentele problemen voor. Ten eerste veroorzaakte de hoge snelheid van de springer op het landingsmoment sterke bewegingswaas in het beeld. Omdat YOLO-pose elk frame onafhankelijk verwerkt zonder temporele context, resulteerde dit in frequente uitval van de enkelpredities op precies de frames die het meest relevant waren. Ten tweede bevonden zich in het wedstrijdmateriaal regelmatig \textit{spotters} (begeleiders die vlakbij de trampoline staan om de springer bij te staan). Deze personen werden soms verkeerdelijk als de springer ge{\"i}dentificeerd, wat leidde tot volledig foutieve posities.
+In de praktijk deden zich echter twee fundamentele problemen voor. Ten eerste veroorzaakte de hoge snelheid van de springer op het landingsmoment sterke motion blur in het beeld. Omdat YOLO-pose elk frame onafhankelijk verwerkt zonder temporele context, resulteerde dit in frequente uitval van de enkelpredities of sterk afwijkende waarden op precies de frames die het meest relevant waren. Ten tweede bevonden zich in het wedstrijdmateriaal opnieuw regelmatig \textit{spotters}. Deze personen werden soms verkeerdelijk als de springer ge{\"i}dentificeerd, wat leidde tot volledig foutieve posities. Omdat beide problemen zich concentreerden op het landingsmoment zelf, was de aanpak als betrouwbare onderdeel in de pipeline onbruikbaar.
 
 \subsection{Poging 2: Lineaire interpolatie}
 \label{subsec:landingspositie-interpolatie}
 
-Om de hiaten door missende keypointpredities op te vangen, werd in een tweede iteratie lineaire interpolatie toegepast. Tussen twee frames met een geldige detectie werd de positie van de ontbrekende frames geschat als een lineaire overgang tussen de twee gekende posities.
+Om de frames met missende keypointpredities op te vangen, werd in een tweede iteratie lineaire interpolatie toegepast. Een detectie werd als ongeldig beschouwd wanneer de enkelpredities buiten de grenzen van het trampolinebedgebied vielen of wanneer de betrouwbaarheidsscore van het model onder een ingestelde drempelwaarde zakte. Tussen twee frames met een geldige detectie werd de positie van de ontbrekende frames geschat als een lineaire overgang tussen de twee gekende posities.
 
-Deze aanpak verbeterde de continu{\"i}teit van de positiereeks maar leverde onvoldoende nauwkeurige resultaten op. De beweging van een springend gymnast is fundamenteel niet-lineair: na afstoot versnelt de springer, vertraagt bij het hoogste punt, en versnelt opnieuw richting het doek. Een lineaire interpolatie gaat voorbij aan deze dynamiek. Bovendien waren de aaneengesloten periodes zonder geldige detectie vaak lang, waardoor de ge{\"i}nterpoleerde waarden ver afweken van de werkelijke positie.
+% TODO: Figuur met voorbeeld van lineaire interpolatie
+
+Voor korte gaten van één of twee frames leverden de geïnterpoleerde waarden aanvaardbare schattingen. Bij langere aaneengesloten ontbrekende segmenten week de interpolatie echter sterk af van de werkelijke positie. De beweging van een springend gymnast is fundamenteel niet-lineair: na afstoot versnelt de springer, vertraagt bij het hoogste punt, en versnelt opnieuw richting het doek. Een lineaire interpolatie gaat voorbij aan deze dynamiek en veronderstelt een constante snelheid. Bovendien loste de methode het onderliggende probleem niet op: de onbetrouwbare keypointpredities op het landingsmoment zelf bleven aanwezig.
 
 \subsection{Poging 3: ViTPose}
 \label{subsec:landingspositie-vitpose}
 
-Als robuuster alternatief voor YOLO-pose werd ViTPose \autocite{Xu2022} ge{\"e}valueerd. Dit model, toegelicht in Sectie~\ref{subsec:pose-estimation} van de literatuurstudie, maakt gebruik van een Vision Transformer-backbone die door zijn globale attentiemechanisme beter in staat is om complexe ruimtelijke patronen te herkennen, ook bij deels versluierde of vervormde lichamen.
+Als robuuster alternatief voor YOLO-pose werd het ViTPose-base model \autocite{Xu2022} ge{\"e}valueerd. Dit model, toegelicht in Sectie~\ref{subsec:pose-estimation} van de literatuurstudie, maakt gebruik van een Vision Transformer-backbone die door zijn globale attentiemechanisme beter in staat is om complexe ruimtelijke patronen te herkennen, ook bij deels verborgen of vervormde beelden van personen. Dezelfde werkwijze als bij Poging~1 werd toegepast: keypoints 15 en 16 werden uitgelezen en hun gemiddelde diende als contactpunt voor de homografietransformatie.
 
-ViTPose leverde inderdaad betere keypointpredities op dan YOLO-pose, met name in frames met matige bewegingswaas. Bij de snelste bewegingen (de frames net voor en op het moment van landing) bleven de predities echter onvoldoende betrouwbaar. De fundamentele beperking van het werken met enkelvoudige frames zonder temporele context gold voor ViTPose evenzeer als voor YOLO-pose. Dit leidde tot de beslissing om de volledige keypoint-gebaseerde aanpak te verlaten en over te stappen op segmentatie.
+ViTPose leverde inderdaad betere keypointpredities op dan YOLO-pose, met name in frames met matige motion blur. Het model produceerde vaker volledige keypointvoorspellingen. Bij de snelste bewegingen echter, de frames net vóór en op het moment van landing, bleven de predities onvoldoende betrouwbaar. In sommige gevallen produceerde het model enkelpredities die visueel mogelijk leken maar toch significant afweken van de werkelijke voetpositie. De fundamentele beperking van het werken met enkelvoudige frames zonder temporele context gold voor ViTPose evenzeer als voor YOLO-pose. Dit leidde tot de beslissing om de volledige keypoint-gebaseerde aanpak te verlaten en over te stappen op segmentatie.
 
 \subsection{Finale aanpak: SAM-2}
 \label{subsec:landingspositie-sam2}
 
-In plaats van te proberen de positie van de springer te reconstrueren via expliciete lichaamspunten, werd de probleemstelling verlegd: in plaats van \textit{waar zijn de enkels?} werd de vraag \textit{welk pixel in het beeld staat het laagst en behoort tot de springer?}. Dit leidde tot een segmentatiebenadering op basis van SAM-2 \autocite{Ravi2024}, toegelicht in Sectie~\ref{subsec:sam2}.
-
-De pipeline voor de finale aanpak verloopt als volgt:
-\begin{enumerate}
-    \item Een standaard YOLO11n detectormodel lokaliseert de springer in het landingsframe en geeft een bounding box terug.
-    \item Deze bounding box wordt als \textit{prompt} meegegeven aan SAM-2-tiny, dat op basis hiervan een pixel-nauwkeurig segmentatiemasker van de springer genereert.
-    \item De laagste pixel van dit masker (het pixel met de grootste $y$-co{\"o}rdinaat in beeldco{\"o}rdinaten) wordt ge{\"i}dentificeerd als het voetcontactpunt.
-    \item Dit contactpunt wordt via de homografiematrix $H$ (Sectie~\ref{sec:homografie}) getransformeerd naar een metrische positie op het trampolinebed.
-\end{enumerate}
-
-Het cruciale voordeel van deze aanpak is dat er geen expliciete keypointpredities meer nodig zijn. SAM-2 genereert zijn segmentatiemasker op basis van de globale beeldstructuur, waardoor het model robuuster is tegen de bewegingswaas die de pose-gebaseerde methoden parten speelde. Bovendien is de aanpak minder gevoelig voor het probleem van spotters: de bounding box van YOLO bepaalt van welke persoon het masker wordt gemaakt, en door bewust de persoon op het trampolinedoek te selecteren kan de verwarring met begeleiders worden vermeden.
-
-Dit berekende contactpunt in pixelco{\"o}rdinaten wordt vervolgens met behulp van de homografiematrix $H$ (Sectie~\ref{sec:homografie}) getransformeerd naar het co{\"o}rdinaat in het stelsel van de trampoline. Op basis van deze transformatie wordt bepaald in welke HD-zone de landing valt.
-
-\subsection{Aanvullende verkenning: Optical flow}
-\label{subsec:landingspositie-opticalflow}
-
-Na de implementatie van de SAM-2-gebaseerde aanpak werd aanvullend onderzocht of optical flow een alternatieve benadering kon bieden voor de landingspositiebepaling. Optical flow beschrijft de schijnbare beweging van pixels tussen twee opeenvolgende videoframes op basis van intensiteitsverschillen, en maakt lokale bewegingspatronen in een beeld zichtbaar (zie Figuur~\ref{fig:optical-flow}).
-
-Het achterliggende idee was dat de vervorming van het trampolinedoek op het contactmoment lokaal waarneembaar zou zijn als een divergerend bewegingspatroon: het doek beweegt ter hoogte van het contactpunt naar beneden, terwijl de omliggende delen relatief stilstaan of terugveren. Door optical flow toe te passen op opeenvolgende frames rond het landingsmoment, werd gehoopt dit lokale vervormingspatroon te isoleren en het zwaartepunt van de vervorming als proxy voor de landingspositie te gebruiken.
-
-In de praktijk leverde deze aanpak geen bruikbare resultaten op. De hoge snelheid van de springer vlak voor landing veroorzaakte sterke bewegingsonscherpte in het beeld, waardoor de optical flow-vectoren werden gedomineerd door de globale beweging van de springer zelf. De subtiele doekvervorming kon daardoor niet betrouwbaar worden ge{\"i}soleerd van de omringende beweging. Optical flow bleek aldus ongeschikt als zelfstandige methode voor landingspositiebepaling in deze context.
+In plaats van te proberen de positie van de springer te reconstrueren via expliciete lichaamspunten, werd de probleemstelling verlegd: in plaats van \textit{"waar zijn de enkels?"} werd de vraag \textit{"welk pixel in het beeld vormt de laagste positie van de springer?"}. Dit leidde tot een segmentatiebenadering op basis van SAM-2 \autocite{Ravi2024}, toegelicht in Sectie~\ref{subsec:sam2}.
 
 \begin{figure}[ht]
     \centering
-    % TODO: Voeg hier een illustratieve optical flow-afbeelding toe (bv. van Wikipedia of een standaard referentie)
-    % Verwijder de onderstaande placeholder zodra de afbeelding beschikbaar is.
-    \fbox{\parbox[c][5cm][c]{0.8\linewidth}{\centering\textit{[Optical flow visualisatie — afbeelding toe te voegen]}}}
-    \caption[Optical flow visualisatie]{Illustratieve visualisatie van optical flow. Pijlen geven de richting en magnitude van lokale pixelbewegingen tussen twee opeenvolgende frames weer. In deze context werd verwacht dat de doekvervorming op het landingsmoment als een lokaal divergerend patroon zichtbaar zou zijn.}
-    \label{fig:optical-flow}
+    \includegraphics[width=0.85\textwidth]{sam_segmentation.png}
+    \caption[SAM-2 segmentatie op een landingsframe]{SAM-2 segmentatie op een landingsframe. Het cyaan masker toont de springer zoals gesegmenteerd door SAM-2-tiny op basis van de YOLO-bounding box als prompt. Het gele punt geeft de laagste pixel van het masker aan, die wordt gebruikt als voetcontactpunt voor de positiebepaling.}
+    \label{fig:sam2-segmentatie}
 \end{figure}
 
-%----------------------------------------------------------------------
+De pipeline voor de finale aanpak verloopt als volgt:
+\begin{enumerate}
+    \item YOLO11n detecteert alle personen in het landingsframe. De bounding box van de persoon met de grootste overlap met het eerder bepaalde trampolinebedgebied wordt geselecteerd als de springer.
+    \item Deze bounding box wordt als \textit{prompt} meegegeven aan SAM-2-tiny, dat op basis hiervan een pixelnauwkeurig segmentatiemasker van de springer genereert.
+    \item De laagste pixel van dit masker (de pixel met de grootste $y$-co{\"o}rdinaat in beeldco{\"o}rdinaten) wordt ge{\"i}dentificeerd als het voetcontactpunt.
+    \item Dit contactpunt wordt via de homografiematrix $H$ (Sectie~\ref{sec:homografie}) getransformeerd naar een metrische positie op het trampolinebed, en op basis hiervan wordt bepaald in welke HD-zone de landing valt.
+\end{enumerate}
+
+Het cruciale voordeel van deze aanpak is dat er geen expliciete keypointpredities meer nodig zijn. SAM-2 genereert zijn segmentatiemasker op basis van de globale beeldstructuur, waardoor het model robuuster is tegen de bewegingswaas die de pose-gebaseerde methoden parten speelde. De aanpak bleek ook minder gevoelig voor het probleem van spotters: door de bounding box te selecteren op basis van overlap met het trampolinebedgebied, wordt expliciet de persoon op het doek gekozen in plaats van een willekeurig gedetecteerde persoon in het beeld.
+
+\subsection{Aanvullend onderzoek: Optical flow}
+\label{subsec:landingspositie-opticalflow}
+
+Na de implementatie van de SAM-2-gebaseerde aanpak werd aanvullend onderzocht of optical flow een alternatieve benadering kon bieden voor de landingspositiebepaling. Optical flow beschrijft de schijnbare beweging van pixels tussen twee opeenvolgende videoframes op basis van intensiteitsverschillen, en maakt lokale bewegingspatronen in een beeld zichtbaar. De Farneback-methode die hiervoor werd ingezet, wordt in detail toegelicht in Sectie~\ref{subsec:farneback} van de literatuurstudie.
+
+Concreet werd de Farneback-methode voor dense optical flow \autocite{Farneback2003} toegepast op opeenvolgende frameparen rond het landingsmoment. Het achterliggende idee was dat de vervorming van het trampolinedoek op het contactmoment lokaal waarneembaar zou zijn als een divergerend bewegingspatroon: het doek beweegt ter hoogte van het contactpunt naar beneden, terwijl de omliggende delen relatief stilstaan of terugveren. Door de dense flow field toe te passen op opeenvolgende frames rond het landingsmoment, werd gehoopt dit lokale vervormingspatroon te isoleren en het zwaartepunt van de vervorming als proxy voor de landingspositie te gebruiken.
+
+In de praktijk leverde deze aanpak geen bruikbare resultaten op. Figuur \ref{fig:optical_flow_voorbeeld} toont de visualisaties van de optical flow. De optical flow-vectoren werden gedomineerd door de globale beweging van de springer zelf. De subtiele doekvervorming kon daardoor niet betrouwbaar worden ge{\"i}soleerd van de omringende beweging. Optical flow bleek aldus ongeschikt als zelfstandige methode voor landingspositiebepaling in deze context, wat de keuze voor de SAM-2-gebaseerde aanpak als finale oplossing definitief bevestigde.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\linewidth]{optical_flow_voorbeeld.png}
+    \caption[Optical flow vectoren op een landingsframe]{Visualisatie van de optical flow vectoren rond het landingsmoment. De dominante beweging van de springer overschaduwt de subtiele vervorming van het doek, waardoor de landingspositie niet betrouwbaar kan worden geïsoleerd.}
+    \label{fig:optical_flow_voorbeeld}
+\end{figure}
+
 
 \section{ToF-schatting}
 \label{sec:tof}
 
 Naast de horizontale verplaatsing is de vluchttijd (ToF) een tweede kerncomponent van de eindscore. Het doel van deze sectie is om de ToF te bepalen op basis van de gedetecteerde landingsmomenten en de framerate van de inputvideo, zonder dat er extra sensoren aan te pas komen.
 
-Omdat de video's vanuit een zijdelings perspectief zijn gefilmd, is een directe schatting van de absolute vluchthoogte ($z$-co{\"o}rdinaat) niet haalbaar zonder dieptesensor. In plaats daarvan wordt de ToF bepaald via \textit{contactdetectie}: de landingsframes gedetecteerd in Sectie~\ref{sec:landingsmoment} fungeren als ankerpunten voor de tijdsmeting.
+Er werd geopteerd om de ToF te bepalen via \textit{contactdetectie}: de landingsframes gedetecteerd in Sectie~\ref{sec:landingsmoment} fungeren als ankerpunten voor de tijdsmeting.
 
 De ToF-berekening verloopt als volgt: voor elke sprong in een reeks wordt het frame-verschil bepaald tussen het landingsframe van de vorige sprong en het landingsframe van de volgende sprong. Dit verschil, gedeeld door de framerate van de video (frames per seconde), geeft de duur van één vluchttijdsinterval. De totale ToF-score is de som van alle vluchttijdsintervallen over de volledige reeks van tien sprongen.
 
-De nauwkeurigheid van deze methode is inherent begrensd door de framerate van de video. Elke landing kan slechts met een precisie van $\tfrac{1}{\text{fps}}$ seconden worden bepaald. Bij een framerate van 25 fps bedraagt deze onzekerheid 40\,ms per landing, wat over een volledige reeks kan oplopen tot een cumulatieve fout van honderden milliseconden. Dit wordt verder besproken in Hoofdstuk~\ref{ch:evaluatie}.
+De nauwkeurigheid van deze methode is inherent begrensd door de framerate van de video. Elke landing kan slechts met een precisie van $\tfrac{1}{\text{fps}}$ seconden worden bepaald. Bij een framerate van 25 fps bedraagt deze onzekerheid 40\,ms per landing, wat over een volledige reeks kan oplopen tot een cumulatieve fout van honderden milliseconden. Dit wordt verder besproken in Hoofdstuk~\ref{ch:resultaten}.
