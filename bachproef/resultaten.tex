@@ -14,9 +14,9 @@ Voor de landingspositiebepaling werden twee varianten geëvalueerd. In de \emph{
 \section{Hoekpuntdetectie}
 \label{sec:resultaten-hoekpunten}
 
-Het YOLO11n-pose model voor hoekpuntdetectie behaalt op de testset een detectieratio van 97,1\% met een gemiddelde genormaliseerde detectiefout (NERR) van 7,89\%. Dit wijst op een sterke generalisatie over de uiteenlopende camerastandpunten en -afstanden in het wedstrijdmateriaal.
+Het YOLO11n-pose model voor hoekpuntdetectie behaalt op de testset een detectieratio van 97,1\% met een gemiddelde genormaliseerde detectiefout (NERR) van 7,89\%. De NERR meet hoe ver de gedetecteerde positie afwijkt van de werkelijke positie, genormaliseerd naar de beeldschaal zodat de fout vergelijkbaar is ongeacht de resolutie of camera-afstand. Dit wijst op een sterke generalisatie over de uiteenlopende camerastandpunten en -afstanden in het wedstrijdmateriaal.
 
-De nauwkeurigheid is echter niet uniform verdeeld over de vier hoekpunten. Figuur~\ref{fig:hoekpunten} illustreert de gemiddelde genormaliseerde fout per hoekpunt. De hoekpunten aan de bovenzijde worden relatief nauwkeurig gedetecteerd (gemiddeld 4,86\%), terwijl het hoekpunt rechtsonder een aanzienlijk grotere afwijking vertoont (13,96\%). Dit is toe te schrijven aan een onbalans in de trainingsdataset: frames van een lege trampoline in rusttoestand komen frequenter voor ten opzichte van landingsmomenten, waardoor het model de dynamische doekvervorming minder goed heeft aangeleerd.
+De nauwkeurigheid is echter niet uniform verdeeld over de vier hoekpunten. Figuur~\ref{fig:hoekpunten} illustreert de gemiddelde genormaliseerde fout per hoekpunt. De hoekpunten aan de bovenzijde worden relatief nauwkeurig gedetecteerd (NERR bedraagt gemiddeld 4,86\%), terwijl het hoekpunt rechtsonder een aanzienlijk grotere afwijking vertoont (NERR bedraagt 13,96\%). Dit is toe te schrijven aan een onbalans in de trainingsdataset: frames van een lege trampoline in rusttoestand komen frequenter voor ten opzichte van landingsmomenten, waardoor het model de dynamische doekvervorming minder goed heeft aangeleerd.
 
 \begin{figure}[ht]
     \centering
@@ -25,7 +25,7 @@ De nauwkeurigheid is echter niet uniform verdeeld over de vier hoekpunten. Figuu
     \label{fig:hoekpunten}
 \end{figure}
 
-De voornaamste zwakte bevindt zich op het moment van landing: wanneer de springer het doek raakt, zakt het trampolineoppervlak plaatselijk in. Dit veroorzaakt een vervorming van het zichtbaar toestel, waardoor het model de hoekpunten soms verschuift naar incorrect gedetecteerde posities. Omdat de volledige homografietransformatie op deze vier punten steunt, werkt elke afwijking hier rechtstreeks door in de berekende landingspositie.
+De voornaamste zwakte bevindt zich op het moment van landing: wanneer de springer het doek raakt, zakt het trampolineoppervlak plaatselijk in. Dit veroorzaakt een optische vervorming van het trampolinedoek in het camerabeeld, waardoor het model de hoekpunten soms verschuift naar incorrect gedetecteerde posities. Omdat de volledige homografietransformatie op deze vier punten steunt, werkt elke afwijking hier rechtstreeks door in de berekende landingspositie.
 
 De vergelijking tussen automatische detectie en manuele annotatie bevestigt dit: bij manueel vastgelegde hoekpunten voor statische camera-opstellingen is de landingspositiebepaling duidelijk consistenter. Manuele annotatie fungeert daarmee als bovengrens voor de haalbare nauwkeurigheid van het systeem in de huidige opzet.
 
@@ -40,7 +40,7 @@ De diepte-as (voor-achter vanuit het camerastandpunt) presteert beduidend minder
 \section{Landingsmomentdetectie}
 \label{sec:resultaten-landingsmoment}
 
-De binaire classifier onderscheidt de klassen \textit{Landed} en \textit{Not Landed} met hoge betrouwbaarheid. Visuele controle van gedetecteerde landingsframes toont aan dat het model de overgang van vlucht naar contact consistent en correct identificeert, zelfs bij varierende belichting en camerastandpunten.
+De binaire classifier onderscheidt de klassen \textit{Landed} en \textit{Not Landed} met hoge betrouwbaarheid. Visuele controle van gedetecteerde landingsframes toont aan dat het model de overgang van vlucht naar contact consistent en correct identificeert, zelfs bij vari{\"e}rende belichting en camerastandpunten.
 
 Een systematisch probleem dat optreedt is het \textit{eerste-frame probleem}: op het moment dat de classifier voor het eerst \textit{Landed} detecteert, is het trampolinedoek al licht ingezakt onder het gewicht van de springer. De springer staat op dit frame dus iets lager dan de werkelijke landingspositie, wat een kleine systematische fout introduceert in de positiebepaling. Dit effect is inherent aan de frame-gebaseerde aanpak en kan niet worden ge{\"e}limineerd zonder hogere framerate.
 

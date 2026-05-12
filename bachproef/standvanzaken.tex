@@ -115,7 +115,7 @@ Figuur~\ref{fig:svz_park_pipeline} toont de werking van dit algoritme: naast de 
     \label{fig:svz_park_pipeline}
 \end{figure}
 
-De resultaten van dit onderzoek tonen een gemiddelde afwijking van 11.7 mm. Dit suggereert dat deze methode, mits aangepast voor grote trampolines, voldoende nauwkeurig kan zijn voor het bepalen van de landingszones. De methode is echter specifiek ontwikkeld voor fitnesstrampolines en vereist een cameraopstelling onder het toestel, wat in een wedstrijdcontext moeilijk realiseerbaar is wegens toegankelijkheidsbeperkingen en veiligheidsvoorschriften. Geïnspireerd door deze resultaten werd in de initi{\"e}le fase van dit onderzoek eveneens ge{\"e}xperimenteerd met een cameraopstelling onder de trampoline. Dit wordt verder toegelicht in Hoofdstuk~\ref{ch:methodologie}.
+De resultaten van dit onderzoek tonen een gemiddelde afwijking van 11.7 mm. Dit suggereert dat deze methode, mits aangepast voor grote trampolines, voldoende nauwkeurig kan zijn voor het bepalen van de landingszones. De methode is echter specifiek ontwikkeld voor ronde fitnesstrampolines en vereist een cameraopstelling onder het toestel, wat in een wedstrijdcontext moeilijk realiseerbaar is wegens toegankelijkheidsbeperkingen en veiligheidsvoorschriften. Geïnspireerd door deze resultaten werd in de initi{\"e}le fase van dit onderzoek eveneens ge{\"e}xperimenteerd met een cameraopstelling onder de trampoline. Dit wordt verder toegelicht in Hoofdstuk~\ref{ch:methodologie}.
 
 \section{Computer vision-technieken}
 \label{sec:computer-vision-technieken}
@@ -146,17 +146,28 @@ In dit onderzoek wordt een gelijkaardige methodiek gehanteerd om de prestaties b
 
 Een centrale uitdaging in het voorgestelde systeem is het per frame lokaliseren van zowel de trampoline als de gymnast. Hiervoor wordt gebruikgemaakt van de YOLO-familie (\textit{You Only Look Once}) van objectdetectiemodellen \autocite{Jocher_Ultralytics_YOLO_2023}.
 
-In tegenstelling tot twee-staps detectoren, zoals Faster R-CNN dat door \textcite{Park2022} werd ingezet, voert YOLO de volledige detectie in één enkele doorgang door het neurale netwerk uit. Het beeld wordt opgedeeld in een raster, waarbij elke cel tegelijk een bounding box, een betrouwbaarheidsscore en een klasse-indeling voorspelt. Dit maakt het model bijzonder geschikt voor real-time toepassingen. De meest recente generatie, YOLOv11 van Ultralytics, ondersteunt naast standaard objectdetectie ook een pose-variant voor keypointdetectie en een \textit{classificatie}-variant.
+In tegenstelling tot twee-staps detectoren, zoals Faster R-CNN dat door \textcite{Park2022} werd ingezet, voert YOLO de volledige detectie in één enkele doorgang door het neurale netwerk uit. Het beeld wordt opgedeeld in een raster, waarbij elke cel tegelijk een bounding box, een betrouwbaarheidsscore en een klasse-indeling voorspelt (zie Figuur~\ref{fig:yolo-werking}). Dit maakt het model bijzonder geschikt voor real-time toepassingen. De meest recente generatie, YOLOv11 van Ultralytics, ondersteunt naast standaard objectdetectie ook een pose-variant voor keypointdetectie en een \textit{classificatie}-variant.
 
-% TODO: Figuur van yolo proces toevoegen
-% TODO: Figuur object detectie + pose detectie?
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.75\textwidth]{yolo_model_werking}
+    \caption{Schematische weergave van het YOLO-detectieproces: het beeld wordt opgedeeld in een S$\times$S raster, waarna per cel gelijktijdig bounding boxes, betrouwbaarheidsscores en klasse-kansen worden voorspeld \autocite{Rosebrock2018}.}
+    \label{fig:yolo-werking}
+\end{figure}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.75\textwidth]{bbox_and_pose}
+    \caption{Voorbeeld van YOLO11 pose estimation: bounding boxes en lichaamskeypoints worden gelijktijdig per persoon voorspeld \autocite{Ultralytics2024pose}.}
+    \label{fig:bbox-pose}
+\end{figure}
 
 In dit onderzoek wordt YOLOv11 ingezet voor drie afzonderlijke taken: het detecteren van de vier hoekpunten van het trampolinebed (via de pose-variant), het classificeren van frames als \textit{Landed} of \textit{Not Landed}, en het lokaliseren van de gymnast als persoon. De eerste twee modellen worden daarvoor specifiek gefinetuned op trampolinedata, zoals besproken in Sectie~\ref{sec:datasets}. De veelzijdigheid van YOLOv11, die detectie, classificatie en keypointdetectie combineert in één modelfamilie, maakt het bouwen van een geïntegreerde pipeline zeer efficiënt, waarbij meerdere deeltaken met hetzelfde framework worden opgelost.
 
 \subsection{Pose Estimation}
 \label{subsec:pose-estimation}
 
-Pose Estimation is een computervisietechniek waarbij de posities van specifieke lichaamspunten (\textit{keypoints}) van een persoon worden bepaald op basis van een camerabeeld. In het meestgebruikte formaat; het COCO-formaat (Common Objects in Context), worden 17 keypoints gedefinieerd en gedetecteerd, waaronder de enkels, knieën, heupen, schouders en het hoofd. Deze keypoints kunnen worden gebruikt om de houding en beweging van een persoon te analyseren.
+Pose Estimation is een computer vision-techniek waarbij de posities van specifieke lichaamspunten (\textit{keypoints}) van een persoon worden bepaald op basis van een camerabeeld. In het meestgebruikte formaat; het COCO-formaat (Common Objects in Context), worden 17 keypoints gedefinieerd en gedetecteerd, waaronder de enkels, knieën, heupen, schouders en het hoofd. Deze keypoints kunnen worden gebruikt om de houding en beweging van een persoon te analyseren (zie Figuur~\ref{fig:bbox-pose}).
 
 Codefragment~\ref{lst:coco-keypoints} illustreert hoe een COCO-annotatie er in de praktijk uitziet. Elk keypoint wordt opgeslagen als een triplet \texttt{(x,~y,~v)}: de pixelco{\"o}rdinaten gevolgd door een zichtbaarheidswaarde \texttt{v}. De waarde \texttt{2} geeft aan dat het keypoint zichtbaar is in het beeld; \texttt{1} betekent dat het aanwezig is maar wordt afgeschermd (\textit{occluded}); \texttt{0} betekent dat het keypoint niet gelabeld werd.
 
@@ -188,22 +199,31 @@ Codefragment~\ref{lst:coco-keypoints} illustreert hoe een COCO-annotatie er in d
     \label{lst:coco-keypoints}
 \end{listing}
 
-ViTPose \autocite{Xu2022} is een state-of-the-art model voor keypointdetectie dat gebruik maakt van een \textit{Vision Transformer} (ViT) als onderliggend basisnetwerk (backbone). Transformerarchitecturen zijn oorspronkelijk ontwikkeld voor tekstverwerking, maar zijn later succesvol toegepast op beeldtaken doordat ze globale verbanden in een beeld kunnen modelleren via een aandachtsmechanisme (attention mechanism), waarbij het model zelf bepaalt welke beeldregio's het meest relevant zijn voor de taak. ViTPose behaalt topprestaties op de COCO keypointbenchmarks en is daarmee een geschikte kandidaat voor het nauwkeurig lokaliseren van lichaamspunten.
+ViTPose \autocite{Xu2022} is een state-of-the-art model voor keypointdetectie dat gebruikmaakt van een \textit{Vision Transformer} (ViT) als backbone. Transformerarchitecturen zijn wellicht het best bekend van taalmodellen zoals GPT (\textit{Generative Pre-trained Transformer}), waarop applicaties zoals ChatGPT zijn gebaseerd, maar worden tegenwoordig ook succesvol toegepast op beeldtaken. Het verschil zit in wat er als invoer wordt aangeboden: waar GPT werkt met tekstfragmenten (tokens), verdeelt ViT een afbeelding in kleine beeldvakjes die op dezelfde manier worden verwerkt. Het centrale principe, een aandachtsmechanisme dat zelf bepaalt welke delen van de invoer het meest relevant zijn, blijft hetzelfde. ViTPose behaalt topprestaties op de COCO keypointbenchmarks en is daarmee een geschikte kandidaat voor het nauwkeurig lokaliseren van lichaamspunten.
 
 % TODO: Figuur van ViT Attention mechanisme toevoegen
 
-De geschiktheid van ViTPose voor trampolinecontext wordt bevestigd door recent onderzoek van \textcite{DroletRoy2026}, die het model gebruikten om verder te finetunen op synthetische trampolinedata en daarmee \textit{state-of-the-art} 2D-keypointprestaties behalen op echte trampolineopnames. Hun resultaten tonen aan dat een gefinetuned ViTPose-model ook bij 3D-reconstructie van beelden uit meerdere camerastandpunten beter presteert dan het voorgetrainde basismodel. Er werd een gemiddelde reductie van 19,6\% in Mean Per Joint Position Error (MPJPE) gerapporteerd. Dit benadrukt het potentieel van ViTPose voor de uitdagende poses en gezichtshoeken die in trampolinegymnastiek voorkomen.
+De geschiktheid van ViTPose voor trampolinecontext wordt bevestigd door recent onderzoek van \textcite{DroletRoy2026}, die het model gebruikten om verder te finetunen op synthetische trampolinedata en daarmee \textit{state-of-the-art} 2D-keypointprestaties behalen op echte trampolineopnames. Hun resultaten tonen aan dat een gefinetuned ViTPose-model ook bij 3D-reconstructie van beelden uit meerdere camerastandpunten beter presteert dan het voorgetrainde basismodel. Er werd een gemiddelde reductie van 19,6\% in Mean Per Joint Position Error (MPJPE, de gemiddelde positiefout per gewricht) gerapporteerd. Dit benadrukt het potentieel van ViTPose voor de uitdagende poses en gezichtshoeken die in trampolinegymnastiek voorkomen.
 
-% TODO: Figuur van paper van DroletRoy toevoegen???
+Voor dit onderzoek was de initiële aanpak om het middelpunt tussen de twee enkels (keypoints 16 en 17) te gebruiken als nauwkeurig referentiepunt voor de landingspositie. Conceptueel is dit veelbelovend: de enkels bevinden zich bij landing het dichtst bij het trampolinebed en vormen daardoor het meest relevante referentiepunt voor positiebepaling.
 
-Voor dit onderzoek was de initiële aanpak om het middelpunt tussen de twee enkels (keypoints 16 en 17) te gebruiken als nauwkeurig referentiepunt voor de landingspositie. In de praktijk bleek echter dat bij snelle trampolinesprongen de bewegingsonscherpte (\textit{motion blur}) in het landingsframe regelmatig leidt tot het wegvallen van keypointpredities. Omdat dit zich specifiek voordoet op het kritieke moment van de landing, is deze aanpak onbetrouwbaar voor dit toepassingsdomein.
+In de praktijk stuit deze aanpak echter op een fundamenteel probleem dat specifiek is voor echte wedstrijdvideo's. Bij snelle trampolinesprongen treedt op het moment van landing vrijwel altijd bewegingsonscherpte (\textit{motion blur}) op doordat de gymnast met hoge snelheid het bed raakt (zie Figuur~\ref{fig:motion-blur}). Dit veroorzaakt precies op het kritieke landingsframe een verlies van beeldscherpte rondom de voeten en enkels, waardoor keypointpredicties wegvallen of sterk afwijken.
+
+Het eerder aangehaalde onderzoek van \textcite{DroletRoy2026} ondervindt dit probleem niet, omdat hun dataset uitsluitend bestaat uit synthetisch gegenereerde beelden zonder motion blur. Omdat de fout zich precies voordoet op het moment waarop de meting het meest kritisch is, maakt dit pose estimation ongeschikt als primaire methode voor landingspositiebepaling in dit toepassingsdomein.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{motion_blur}
+    \caption{Voorbeeld van motion blur bij een trampolinesprong op het moment van landing, waardoor keypointdetectie onbetrouwbaar wordt.}
+    \label{fig:motion-blur}
+\end{figure}
 
 \subsection{Segmentatie: SAM-2}
 \label{subsec:sam2}
 
 Als alternatief voor keypointdetectie wordt in dit onderzoek gebruikgemaakt van pixel-niveau segmentatie. In plaats van een bounding box rondom de gymnast te berekenen, produceert een segmentatiemodel een binair masker dat exact aangeeft welke pixels tot het object behoren.
 
-Segment Anything Model 2 (\textit{SAM-2}) \autocite{Ravi2024} is een algemeen segmentatiemodel ontwikkeld door Meta, ontworpen voor zowel statische beelden als videosequenties. Wat SAM-2 kenmerkt is de prompt-gestuurde aanpak. Het model accepteert een eenvoudige invoer, zoals een bounding box of een pixelpunt, en genereert op basis daarvan een nauwkeurig segmentatiemasker zonder specifieke finetuning. Figuur~\ref{fig:sam2-prompt} illustreert hoe een combinatie van een bounding box en positieve of negatieve punten als prompt kan worden meegegeven om het gewenste object te segmenteren.
+Segment Anything Model 2 (\textit{SAM-2}) \autocite{Ravi2024} is een algemeen segmentatiemodel ontwikkeld door Meta, ontworpen voor zowel statische beelden als videosequenties. Wat SAM-2 kenmerkt is de prompt-gestuurde aanpak. Het model accepteert een eenvoudige invoer, zoals een bounding box of een pixelpunt, en genereert op basis daarvan een nauwkeurig segmentatiemasker zonder specifieke finetuning. Figuur~\ref{fig:sam2-prompt} illustreert hoe een bounding box als prompt kan worden meegegeven, optioneel aangevuld met positieve punten (pixels die tot het object behoren) of negatieve punten (pixels die er niet toe behoren) om het resultaat verder bij te sturen. In de implementatie van dit onderzoek volstaat een bounding box als enige invoer.
 
 \begin{figure}[ht]
     \centering
@@ -217,29 +237,27 @@ Dit biedt een belangrijk voordeel ten opzichte van pose estimation in de context
 \subsection{Optical Flow en de Farneback-methode}
 \label{subsec:farneback}
 
-Optical flow beschrijft de schijnbare beweging van pixels tussen twee opeenvolgende videoframes. Het basisidee is intuïtief: als een object verschuift, verschuift ook het bijbehorende patroon van lichtintensiteiten in het beeld. Figuur~\ref{fig:optical-flow-concept} illustreert dit principe: een beeldkenmerk op positie $(x, y)$ op tijdstip $t$ is terug te vinden op positie $(x + \mathrm{d}x,\, y + \mathrm{d}y)$ op tijdstip $t + \mathrm{d}t$.
+Optical flow beschrijft de schijnbare beweging van pixels tussen twee opeenvolgende videoframes. Het basisidee is intuïtief: als een object verschuift, verschuift ook het bijbehorende patroon van lichtintensiteiten in het beeld. Het resultaat is een verzameling verplaatsingsvectoren die per pixel aangeven in welke richting en met welke snelheid het beeld verandert. Figuur~\ref{fig:optical-flow-concept} illustreert dit principe aan de hand van een wandelende persoon: de berekende vectoren zijn zichtbaar als pijlen over het volledige beeld, waarbij de richting en lengte de beweging per pixel weergeven.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.6\linewidth]{optical_flow_intuitief.png}
-    \caption[Basisprincipe van optical flow]{Het basisprincipe van optical flow: een beeldkenmerk op positie $(x,y)$ op tijdstip $t$ wordt teruggevonden op positie $(x+\mathrm{d}x,\, y+\mathrm{d}y)$ op tijdstip $t+\mathrm{d}t$.}
+    \includegraphics[width=0.6\linewidth]{optical_flow_vectors}
+    \caption[Optical flow vectoren op een videoframe]{Optical flow vectoren berekend op een videoframe van een wandelende persoon. Elke pijl geeft de verplaatsing van de corresponderende pixel tussen twee opeenvolgende frames weer \autocite{Jain2013}.}
     \label{fig:optical-flow-concept}
 \end{figure}
 
 Traditionele methoden zoals Lucas-Kanade gaan ervan uit dat de beweging constant is binnen een kleine omgeving van pixels: alle naburige pixels bewegen gelijk. Wiskundig is dit vergelijkbaar met het benaderen van de lokale beeldstructuur als een plat vlak. Dit werkt voor kleine, trage verplaatsingen, maar schiet tekort bij complexe of rijke beeldstructuren.
 
-\textcite{Farneback2003} introduceert een fundamenteel andere benadering. In plaats van de lokale omgeving van elk pixel als een vlak te beschouwen, modelleert hij die omgeving als een gekromd oppervlak. Stel je voor dat de helderheidswaarden rondom een pixel een driedimensionaal berglandschap vormen: klassieke methoden leggen daar een plat vlak overheen, terwijl Farneback een gebogen vorm toepast die de lokale structuur veel nauwkeuriger beschrijft. Door te vergelijken hoe dit gekromde oppervlak verschuift tussen twee opeenvolgende frames, berekent het algoritme voor elke pixel afzonderlijk een verplaatsingsvector. Het resultaat is een \textit{dense flow field} (hoge dichtheid): een volledig beeld van beweging, pixel voor pixel, in tegenstelling tot sparse (lage dichtheid) methoden die enkel voor een selectie van kenmerkpunten werken. Dit maakt Farneback geschikt om subtiele, gedistribueerde vervormingen in een beeld te detecteren. De methode is beschikbaar als \texttt{cv2.calcOpticalFlowFarneback()} in de OpenCV-bibliotheek \autocite{opencv_library}.
+\textcite{Farneback2003} introduceert een fundamenteel andere benadering. In plaats van de lokale omgeving van elk pixel als een vlak te beschouwen, modelleert hij die omgeving als een gekromd oppervlak, wat een nauwkeurigere beschrijving geeft van de lokale beeldstructuur. Door te vergelijken hoe dit oppervlak verschuift tussen twee opeenvolgende frames, berekent het algoritme voor elke pixel afzonderlijk een verplaatsingsvector. Anders dan methoden die enkel voor een beperkte selectie van kenmerkpunten een bewegingsvector berekenen, levert Farneback dus voor elke pixel in het beeld een vector op. Dit maakt het algoritme geschikt om subtiele, gedistribueerde vervormingen in een beeld te detecteren. De methode is beschikbaar als \texttt{cv2.calcOpticalFlowFarneback()} in de OpenCV-bibliotheek \autocite{opencv_library}.
 
 \subsection{Datasets}
 \label{sec:datasets}
 
-Het trainen van domeinspecifieke computervisiemodellen vereist data die representatief is voor de omgeving waarin ze zullen worden gebruikt. Voor eerder niche sporten zoals trampolinespringen zijn dergelijke datasets schaars, wat de ontwikkeling van geautomatiseerde meetsystemen een stuk moeilijker maakt.
+Het trainen van domeinspecifieke computer vision-modellen vereist data die representatief is voor de omgeving waarin ze zullen worden gebruikt. Voor eerder niche sporten zoals trampolinespringen zijn dergelijke datasets schaars, wat de ontwikkeling van geautomatiseerde meetsystemen een stuk moeilijker maakt.
 
 \subsubsection{Trampolinedataset}
 \label{subsec:dataset-lin}
 
-\textcite{Lin2025} stellen een dataset voor, specifiek ontworpen voor de beoordeling van actiekwaliteit in trampolinegymnastiek. De dataset bevat 206 video-opnames met finale HD- en ToF-score annotaties van competitieve trampolinesprongen. De dataset is gepubliceerd in het kader van onderzoek naar een causaal cross-modal framework voor langetermijn beoordelingstaken. De dataset bevat data van vier competities: Buenos Aires 2018, Tokyo 2020, Hangzhou 2022 en Paris 2024.
-
-% TODO: Figuur voorbeeldframes uit de dataset toevoegen
+\textcite{Lin2025} stellen een dataset voor, specifiek ontworpen voor de beoordeling van actiekwaliteit in trampolinegymnastiek. De dataset bevat 206 video-opnames met finale HD- en ToF-score annotaties van competitieve trampolinesprongen. De dataset bevat data van vier competities: Buenos Aires 2018, Tokyo 2020, Hangzhou 2022 en Paris 2024.
 
 In dit onderzoek wordt de dataset opgesplitst, waarbij een deel wordt gebruikt als trainingsdata voor twee modellen uit de pipeline: het finetunen van het hoekpuntdetectiemodel dat de vier hoeken van het trampolinebed lokaliseert, en het trainen van de landingsclassifier die per frame bepaalt of de gymnast al dan niet in contact is met het doek. Daarnaast wordt een apart gehouden deel van de dataset ingezet als testset voor het evalueren van de nauwkeurigheid van het volledige systeem, door de gemeten HD- en ToF-waarden te vergelijken met de werkelijke scores. De variatie in camerastandpunten en competitieomgevingen binnen de dataset maakt het een geschikte bron voor het trainen van modellen die robuust moeten zijn over verschillende opstellingen.
